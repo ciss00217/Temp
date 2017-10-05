@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" name="JarmanagerAPI">
+	<Appenders>
+		<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout pattern="{yyyy-MM-dd HH:mm:ss}  [%t] %-5p %c:%L %x - %m%n" charset="UTF-8" />
+		</Console>
+		<File name="jarmanagerAPILog" append="true"
+			fileName="/data/log/JarmanagerAPI/JarmanagerAPI.log">
+			<PatternLayout>
+				<Pattern>%d %p %c [%t] %m%n</Pattern>
+				<charset>UTF-8</charset>
+			</PatternLayout>
+		</File>
+	</Appenders>
+	<Loggers>
+		<Root level="debug">
+			<AppenderRef ref="jarmanagerAPILog" />
+			<AppenderRef ref="STDOUT" />
+		</Root>
+	</Loggers>
+</Configuration>
