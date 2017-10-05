@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="heartBeatConnectionFactory" class="com.rabbitmq.jms.admin.RMQConnectionFactory">
+		<property name="username" value="admin" />
+		<property name="password" value="password" />
+		<property name="virtualHost" value="/" />
+		<property name="host" value="192.168.112.199" />
+		<property name="port" value="5672" />
+	</bean>
+
+	<bean id="heartBeatDestination" class="com.rabbitmq.jms.admin.RMQDestination">
+		<property name="destinationName" value="jmsHeart" />
+		<property name="amqp" value="true" />
+		<property name="amqpQueueName" value="jmsHeart" />
+		<property name="amqpExchangeName" value="jms.durable.queues" />
+		<property name="amqpRoutingKey" value="jmsHeart" />
+	</bean>
+
+
+	<bean id="SFBalance" class="tw.com.jarmanager.api.vo.JarProjectVO">
+		<property name="fileName" value="SFBalance" />
+		<property name="beatID" value="SFBalance" />
+		<property name="jarFilePath" value="D:\jarFilePath\SFBalance.jar" />
+		<property name="description" value="SFBalance說明"/>
+		<property name="filePathXMLList" >
+			<array value-type="java.lang.String">
+				<value>D:\XMLFilePath\SFBalance.xml</value>
+			</array>
+		</property>
+	</bean>
+	
+	<bean id="SFOutboundDetail" class="tw.com.jarmanager.api.vo.JarProjectVO">
+		<property name="fileName" value="SFOutboundDetail" />
+		<property name="beatID" value="SFOutboundDetail" />
+		<property name="jarFilePath" value="D:\jarFilePath\SFOutboundDetail.jar" />
+		<property name="description" value="SFOutboundDetail說明"/>
+		<property name="filePathXMLList" >
+			<array value-type="java.lang.String">
+				<value>D:\XMLFilePath\SFOutboundDetail.xml</value>
+			</array>
+		</property>
+	</bean>
+	
+	<bean id="SFStatus" class="tw.com.jarmanager.api.vo.JarProjectVO">
+		<property name="fileName" value="SFStatus" />
+		<property name="beatID" value="SFStatus" />
+		<property name="jarFilePath" value="D:\jarFilePath\SFStatus.jar" />
+		<property name="description" value="SFStatus說明"/>
+		<property name="filePathXMLList" >
+			<array value-type="java.lang.String">
+				<value>D:\XMLFilePath\SFStatus.xml</value>
+			</array>
+		</property>
+	</bean>
+	
+	<bean id="Q2W" class="tw.com.jarmanager.api.vo.JarProjectVO">
+		<property name="fileName" value="Q2W" />
+		<property name="beatID" value="Q2W" />
+		<property name="jarFilePath" value="D:\jarFilePath\Q2W.jar" />
+		<property name="description" value="Q2W說明"/>
+		<property name="filePathXMLList" >
+			<array value-type="java.lang.String">
+				<value>D:\XMLFilePath\q2w-config.xml</value>
+				<value>D:\XMLFilePath\xmlconverter-config.xml</value>
+			</array>
+		</property>
+	</bean>
+
+	<bean id="jarProjectVOList" class="java.util.ArrayList">
+	    <constructor-arg>
+	        <list>
+	            <ref bean="SFBalance" />
+	            <ref bean="SFOutboundDetail" />
+	            <ref bean="SFStatus" />
+				<ref bean="Q2W" />
+	        </list>
+	    </constructor-arg>
+	</bean>
+	
+	<bean id="managerConfig" class="tw.com.jarmanager.api.vo.ManagerVO">
+		<property name="jarProjectVOList" >
+			<ref bean="jarProjectVOList"/>
+		</property>
+		<property name="folderPath" value="D:\jarTest"/>
+		<property name="loadingTime" value="120000"/>
+		<property name="reCheckTime" value="120000"/>
+	</bean>
+
+</beans>
