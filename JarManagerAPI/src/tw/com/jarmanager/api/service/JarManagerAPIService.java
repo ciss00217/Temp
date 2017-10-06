@@ -74,6 +74,12 @@ public class JarManagerAPIService {
 
 	}
 
+	/**
+	 * 邏輯 1.startJars 得到啟動的jarVO 放入 HashMap
+	 * 
+	 * 2.
+	 * 
+	 **/
 	@AnnotationVO(description = "啟動JarManagerService 用來監控觀察底下的JAR 如果client 阻塞 或 關閉 就重啟它", methodName = "-startManager D:\\yourFileXmlPath")
 	public static void startManager() {
 
@@ -88,7 +94,10 @@ public class JarManagerAPIService {
 			while (true) {
 
 				if (exit) {
+
+					logger.debug("程序已關閉");
 					break;
+
 				}
 
 				HashMap<String, JarProjectVO> oldJarProjectVOMap = managerVO.getJarProjectVOMap();
@@ -140,7 +149,7 @@ public class JarManagerAPIService {
 					public void run() {
 
 						String fileName = (jarProjectVO.getFileName() + ".jar");
-						String[] commandLinearr =jarProjectVO.getCommandLinearr();
+						String[] commandLinearr = jarProjectVO.getCommandLinearr();
 						String key = jarProjectVO.getBeatID();
 						Process process = null;
 						JarConsole jarConsole = null;
@@ -196,35 +205,51 @@ public class JarManagerAPIService {
 	}
 
 	/**
-	 * 重新啟動放在DeathList的JarProjectVO
+	 * 重新啟動放未找到次數為5的
+	 * 
+	 * DeathList的JarProjectVO
+	 * 
 	 */
 	public static HashMap<String, JarProjectVO> reStart(List<JarProjectVO> DeathList,
 			HashMap<String, JarProjectVO> jarProjectVOMap) throws IOException {
 
 		for (JarProjectVO deathjarProjectVO : DeathList) {
 			JarProjectVO jarProjectVO = jarProjectVOMap.get(deathjarProjectVO.getBeatID());
-			Process oldProcess = jarProjectVO.getProcess();
+
+			int errorNumber = jarProjectVO.getErrorNumber();
 
 			logger.debug("Not Alive!!");
 			logger.debug("FileName: " + deathjarProjectVO.getFileName());
 			logger.debug("BeatID: " + deathjarProjectVO.getBeatID());
-			logger.debug("destroy.....");
 
-			oldProcess.destroy();
+			if (errorNumber >= 5) {
 
-			String fileName = (jarProjectVO.getFileName() + ".jar");
-			String[] commandLinearr = jarProjectVO.getCommandLinearr();
+				logger.debug("destroy.....");
+				Process oldProcess = jarProjectVO.getProcess();
+				oldProcess.destroy();
 
-			ProcessBuilder processBuilder = new ProcessBuilder(commandLinearr);
-			Process newProcess = processBuilder.start();
+				String fileName = (jarProjectVO.getFileName() + ".jar");
+				String[] commandLinearr = jarProjectVO.getCommandLinearr();
 
-			jarProjectVO.setProcess(newProcess);
-			JarConsole jarConsole = new JarConsole(newProcess, fileName);
-			jarProjectVO.setJarConsole(jarConsole);
+				ProcessBuilder processBuilder = new ProcessBuilder(commandLinearr);
+				Process newProcess = processBuilder.start();
 
-			String key = jarProjectVO.getBeatID();
-			jarProjectVOMap.put(key, jarProjectVO);
-			jarConsole.start();
+				jarProjectVO.setProcess(newProcess);
+				JarConsole jarConsole = new JarConsole(newProcess, fileName);
+				jarProjectVO.setJarConsole(jarConsole);
+
+				String key = jarProjectVO.getBeatID();
+				jarProjectVOMap.put(key, jarProjectVO);
+				jarConsole.start();
+			} else if (errorNumber <= 5) {
+
+				logger.debug("not find count +1");
+
+				String key = jarProjectVO.getBeatID();
+				jarProjectVO.setErrorNumber(errorNumber + 1);
+				jarProjectVOMap.put(key, jarProjectVO);
+
+			}
 
 		}
 		return jarProjectVOMap;
@@ -324,11 +349,10 @@ public class JarManagerAPIService {
 	 * 
 	 **/
 	public static void main(String[] args) throws ClassNotFoundException, JMSException {
-		
-		
-//		xmlFile="D:\\jarTest\\JarManagerAPI.xml";
-//		startManager();
-		
+
+		// xmlFile="D:\\jarTest\\JarManagerAPI.xml";
+		// startManager();
+
 		if (args.length == 1) {
 
 			String action = args[0];
@@ -368,5 +392,4 @@ public class JarManagerAPIService {
 
 	}
 
-	
 }

@@ -84,7 +84,6 @@
 		<property name="jarProjectVOList" >
 			<ref bean="jarProjectVOList"/>
 		</property>
-		<property name="folderPath" value="D:\jarTest"/>
 		<property name="loadingTime" value="120000"/>
 		<property name="reCheckTime" value="120000"/>
 	</bean>

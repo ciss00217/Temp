@@ -16,7 +16,15 @@ public class JarProjectVO {
 	private long timeSeries;
 	private String jarFilePath;
 	private String description;
+	private int errorNumber;
 	
+	
+	public int getErrorNumber() {
+		return errorNumber;
+	}
+	public void setErrorNumber(int errorNumber) {
+		this.errorNumber = errorNumber;
+	}
 	public String getFileName() {
 		return fileName;
 	}
