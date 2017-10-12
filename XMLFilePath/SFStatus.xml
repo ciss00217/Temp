@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="jmsConnectionFactory" class="com.rabbitmq.jms.admin.RMQConnectionFactory">
+		<property name="username" value="admin" />
+		<property name="password" value="password" />
+		<property name="virtualHost" value="/" />
+		<property name="host" value="192.168.112.199" />
+		<property name="port" value="5672" />
+	</bean>
+
+	<bean id="SFBalance" class="com.rabbitmq.jms.admin.RMQDestination">
+		<property name="destinationName" value="Test_SFBalance" />
+		<property name="amqp" value="true" />
+		<property name="amqpQueueName" value="Test_SFBalance" />
+		<property name="amqpExchangeName" value="jms.durable.queues" />
+		<property name="amqpRoutingKey" value="Test_SFBalance" />
+	</bean>
+
+
+	<bean id="SFInboundDetail" class="com.rabbitmq.jms.admin.RMQDestination">
+		<property name="destinationName" value="Test_SFInboundDetail" />
+		<property name="amqp" value="true" />
+		<property name="amqpQueueName" value="Test_SFInboundDetail" />
+		<property name="amqpExchangeName" value="jms.durable.queues" />
+		<property name="amqpRoutingKey" value="Test_SFInboundDetail" />
+	</bean>
+
+	<bean id="SFStatus" class="com.rabbitmq.jms.admin.RMQDestination">
+		<property name="destinationName" value="Test_SFStatus" />
+		<property name="amqp" value="true" />
+		<property name="amqpQueueName" value="Test_SFStatus" />
+		<property name="amqpExchangeName" value="jms.durable.queues" />
+		<property name="amqpRoutingKey" value="Test_SFStatus" />
+	</bean>
+	
+	<bean id="SFOutboundDetail" class="com.rabbitmq.jms.admin.RMQDestination">
+		<property name="destinationName" value="Test_SFOutboundDetail" />
+		<property name="amqp" value="true" />
+		<property name="amqpQueueName" value="Test_SFOutboundDetail" />
+		<property name="amqpExchangeName" value="jms.durable.queues" />
+		<property name="amqpRoutingKey" value="Test_SFOutboundDetail" />
+	</bean>
+	
+	<bean id="Error_SFBalance" class="com.rabbitmq.jms.admin.RMQDestination">
+		<property name="destinationName" value="Error_SFBalance" />
+		<property name="amqp" value="true" />
+		<property name="amqpQueueName" value="Error_SFBalance" />
+		<property name="amqpExchangeName" value="jms.durable.queues" />
+		<property name="amqpRoutingKey" value="Error_SFBalance" />
+	</bean>
+
+	<bean id="Error_SFStatus" class="com.rabbitmq.jms.admin.RMQDestination">
+		<property name="destinationName" value="Error_SFStatus" />
+		<property name="amqp" value="true" />
+		<property name="amqpQueueName" value="Error_SFStatus" />
+		<property name="amqpExchangeName" value="jms.durable.queues" />
+		<property name="amqpRoutingKey" value="Error_SFStatus" />
+	</bean>
+
+	<bean id="Error_SFInboundDetail" class="com.rabbitmq.jms.admin.RMQDestination">
+		<property name="destinationName" value="Error_SFInboundDetail" />
+		<property name="amqp" value="true" />
+		<property name="amqpQueueName" value="Error_SFInboundDetail" />
+		<property name="amqpExchangeName" value="jms.durable.queues" />
+		<property name="amqpRoutingKey" value="Error_SFInboundDetail" />
+	</bean>
+
+	<bean id="Error_SFInventoryPush" class="com.rabbitmq.jms.admin.RMQDestination">
+		<property name="destinationName" value="Error_SFInventoryPush" />
+		<property name="amqp" value="true" />
+		<property name="amqpQueueName" value="Error_SFInventoryPush" />
+		<property name="amqpExchangeName" value="jms.durable.queues" />
+		<property name="amqpRoutingKey" value="Error_SFInventoryPush" />
+	</bean>
+	
+	<bean id="Error_SFOutboundDetail" class="com.rabbitmq.jms.admin.RMQDestination">
+		<property name="destinationName" value="Error_SFOutboundDetail" />
+		<property name="amqp" value="true" />
+		<property name="amqpQueueName" value="Error_SFOutboundDetail" />
+		<property name="amqpExchangeName" value="jms.durable.queues" />
+		<property name="amqpRoutingKey" value="Error_SFOutboundDetail" />
+	</bean>
+	
+	<bean id="SFBalanceHeartBeatClientVO" class="tw.com.heartbeat.clinet.vo.HeartBeatClientVO">
+     	<property name="fileName" value="SFBalance"/>
+  		<property name="beatID" value="SFBalance"/>
+  		<property name="timeSeries" value="30000"/>
+ 	</bean>
+ 
+	 <bean id="SFBalanceHeartBeatService" class="tw.com.heartbeat.clinet.serivce.HeartBeatService">
+	  <property name="heartBeatClientVO" >
+	   	<ref bean="SFBalanceHeartBeatClientVO"/>
+	  </property>
+	 </bean>
+	 
+	 <bean id="SFOutboundDetailHeartBeatClientVO" class="tw.com.heartbeat.clinet.vo.HeartBeatClientVO">
+     	<property name="fileName" value="SFOutboundDetail"/>
+  		<property name="beatID" value="SFOutboundDetail"/>
+  		<property name="timeSeries" value="30000"/>
+ 	</bean>
+ 
+	 <bean id="SFOutboundDetailHeartBeatService" class="tw.com.heartbeat.clinet.serivce.HeartBeatService">
+	  <property name="heartBeatClientVO" >
+	   	<ref bean="SFOutboundDetailHeartBeatClientVO"/>
+	  </property>
+	 </bean>
+	 
+	 <bean id="SFStatusHeartBeatClientVO" class="tw.com.heartbeat.clinet.vo.HeartBeatClientVO">
+     	<property name="fileName" value="SFStatus"/>
+  		<property name="beatID" value="SFStatus"/>
+  		<property name="timeSeries" value="30000"/>
+ 	</bean>
+ 
+	 <bean id="SFStatusHeartBeatService" class="tw.com.heartbeat.clinet.serivce.HeartBeatService">
+	  <property name="heartBeatClientVO" >
+	   	<ref bean="SFStatusHeartBeatClientVO"/>
+	  </property>
+	 </bean>
+	
+</beans>

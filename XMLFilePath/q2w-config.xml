@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="connectionFactory" class="tw.com.bean.ConnectionBean">
+		<property name="username" value="admin" />
+		<property name="password" value="password" />
+		<property name="port" value="5672" />
+		<property name="host" value="192.168.112.199" /> 
+	</bean>
+
+	<bean id="queueDestination" class="tw.com.bean.QueueBean">
+		<property name="exchangeName" value="exchange" />
+		<property name="routingKey" value="ian2" />
+		<property name="queueName" value="ian2" />
+	</bean>
+
+	<bean id="queueOrigin" class="tw.com.bean.QueueBean">
+		<property name="exchangeName" value="exchange" />
+		<property name="routingKey" value="ian" />
+		<property name="queueName" value="ian" />
+	</bean>
+
+	<bean id="webService" class="tw.com.bean.WebServiceBean">
+		<property name="url" value="http://192.168.112.164:8088/sfdelivery/" />
+		<property name="type" value="get" />
+		<property name="format" value="xml" />
+	</bean>
+
+	<bean id="heartBeatClient" class="tw.com.heartbeat.clinet.vo.HeartBeatClientVO">
+		<property name="beatID" value="Q2W" />
+		<property name="fileName" value="Q2W" />
+		<property name="timeSeries" value="60000" />
+	</bean>
+
+	<bean id="heartBeatService" class="tw.com.heartbeat.clinet.serivce.HeartBeatService">
+		<property name="heartBeatClientVO">
+			<ref bean="heartBeatClient" />
+		</property>
+	</bean>
+
+</beans>

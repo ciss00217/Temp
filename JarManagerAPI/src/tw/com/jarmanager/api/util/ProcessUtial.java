@@ -37,15 +37,10 @@ public class ProcessUtial {
 		return null;
 	}
 
-	public void destoryProcess(Long pid) {
+	public void destoryProcess(Long pid) throws IOException {
 		if (pid != null) {
 
-			try {
-				Runtime.getRuntime().exec("taskkill /F /PID " + pid.toString());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			Runtime.getRuntime().exec("taskkill /F /PID " + pid.toString());
 		}
 
 	}
