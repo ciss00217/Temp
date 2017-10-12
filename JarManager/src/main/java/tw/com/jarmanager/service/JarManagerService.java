@@ -1,5 +1,8 @@
 package tw.com.jarmanager.service;
 
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -42,12 +45,22 @@ public class JarManagerService {
 
 	}
 
-	public List<JarProjectVO> getJarProjectVOStatus() throws JMSException {
+	public List<JarProjectVO> getJarProjectVOStatus() throws IOException, JMSException {
 
 		JarManagerAPIService jarManagerAPIService = new JarManagerAPIService();
 		jarManagerAPIService.setXmlFilePath("D:\\jarTest\\JarManagerAPI.xml");
 
-		List<JarProjectVO> jarProjectVOList = jarManagerAPIService.getJarProjectVOStatus();
+		List<JarProjectVO> jarProjectVOList = jarManagerAPIService.getJarProjectVOStatus("127.0.0.1", 9527);
+		String PID_TEXT;
+		RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();  
+	       String name = runtime.getName(); // format: "pid@hostname"  
+	       try {  
+	           PID_TEXT=name.substring(0, name.indexOf('@'));  
+	       } catch (Exception e) {  
+	           PID_TEXT="-1";  
+	       }
+	       
+	       System.out.println("PID_TEXT:"+ PID_TEXT);
 
 		return jarProjectVOList;
 

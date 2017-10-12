@@ -57,9 +57,11 @@
 						<td>${listValue.beatID}</td>
 						<td><c:choose>
 								<c:when test="${listValue.isAlive}">
+									<span class="blue">${listValue.notFindCount}</span>
 									<span class="blue">執行中</span>
 								</c:when>
 								<c:otherwise>
+									<span class="blue">${listValue.notFindCount}</span>
 									<span class="red">無反應</span>
 								</c:otherwise>
 							</c:choose></td>

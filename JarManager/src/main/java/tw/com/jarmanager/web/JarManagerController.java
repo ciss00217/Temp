@@ -1,5 +1,6 @@
 package tw.com.jarmanager.web;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.jms.JMSException;
@@ -30,7 +31,7 @@ public class JarManagerController {
 	}
 
 	@RequestMapping(value = "/Delete/queue", method = RequestMethod.GET)
-	public ModelAndView getSoleHeartBeatClientVOList() throws JMSException {
+	public ModelAndView getSoleHeartBeatClientVOList() throws JMSException, IOException {
 
 
 		List<JarProjectVO> jarProjectVOList = null;
@@ -61,7 +62,7 @@ public class JarManagerController {
 
 		try {
 			jarProjectVOList = jarManagerService.getJarProjectVOStatus();
-		} catch (JMSException e) {
+		} catch (Exception e) {
 			logger.debug("Error: " + e.getMessage());
 		}
 
@@ -84,7 +85,7 @@ public class JarManagerController {
 
 		try {
 			jarProjectVOList = jarManagerService.getJarProjectVOStatus();
-		} catch (JMSException e) {
+		} catch (Exception e) {
 			logger.debug("Error: " + e.getMessage());
 		}
 

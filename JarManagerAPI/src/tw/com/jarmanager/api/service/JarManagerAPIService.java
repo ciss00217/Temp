@@ -3,9 +3,14 @@ package tw.com.jarmanager.api.service;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.jms.JMSException;
 
@@ -14,8 +19,14 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
 import tw.com.heartbeat.clinet.vo.HeartBeatClientVO;
 import tw.com.jarmanager.api.consumer.ConsumerMessage;
+import tw.com.jarmanager.api.socket.SocketClient;
+import tw.com.jarmanager.api.socket.SocketServer;
 import tw.com.jarmanager.api.vo.AnnotationVO;
 import tw.com.jarmanager.api.vo.JarProjectVO;
 import tw.com.jarmanager.api.vo.ManagerVO;
@@ -23,7 +34,7 @@ import tw.com.jarmanager.api.vo.ResponseVO;
 
 public class JarManagerAPIService {
 	private static final Logger logger = LogManager.getLogger(JarManagerAPIService.class);
-	static ResponseVO responseVO;
+	private static ResponseVO responseVO;
 	static boolean exit = false;
 	public static String xmlFile = "";
 
@@ -83,8 +94,12 @@ public class JarManagerAPIService {
 
 		if (responseVO.isSuccess()) {
 
+			SocketServer socketServer = new SocketServer(9527);
+			socketServer.start();
+
 			// 獲得啟動的managerVO
 			ManagerVO managerVO = (ManagerVO) responseVO.getObj();
+
 			while (true) {
 
 				if (exit) {
@@ -107,16 +122,48 @@ public class JarManagerAPIService {
 					logger.debug("Error:" + e.getMessage());
 				}
 
+				List<JarProjectVO> jarProjectVOList = getJarProjectVOList(managerVO);
+
 				try {
 					logger.debug("sleep:" + managerVO.getReCheckTime());
 					Thread.sleep(managerVO.getReCheckTime());
 				} catch (InterruptedException e) {
 					logger.debug("Error:" + e.getMessage());
 				}
+				socketServer.setJarProjectVOList(jarProjectVOList);
 
 			}
 
 		}
+	}
+
+	/*******************************************
+	 * 回傳可轉換成json的JarProjectVOList ps:用於查詢狀態
+	 *****************************************/
+	public static List<JarProjectVO> getJarProjectVOList(ManagerVO managerVO) {
+		HashMap<String, JarProjectVO> hashMap = managerVO.getJarProjectVOMap();
+		List<JarProjectVO> jarProjectVOList = new ArrayList<JarProjectVO>();
+		Set set = new HashSet();
+		set = hashMap.keySet();
+		Iterator it = set.iterator();
+
+		String s;
+		while (it.hasNext()) {
+			s = it.next().toString();
+			JarProjectVO jarProjectVO = hashMap.get(s);
+			JarProjectVO forJsonJarVO = new JarProjectVO();
+			forJsonJarVO.setBeatID(jarProjectVO.getBeatID());
+			forJsonJarVO.setDescription(jarProjectVO.getDescription());
+			forJsonJarVO.setFileName(jarProjectVO.getFileName());
+			forJsonJarVO.setFilePathXMLList(jarProjectVO.getFilePathXMLList());
+			forJsonJarVO.setIsAlive(jarProjectVO.getIsAlive());
+			forJsonJarVO.setJarFilePath(jarProjectVO.getJarFilePath());
+			forJsonJarVO.setNotFindCount(jarProjectVO.getNotFindCount());
+			forJsonJarVO.setTimeSeries(jarProjectVO.getTimeSeries());
+			jarProjectVOList.add(forJsonJarVO);
+		}
+
+		return jarProjectVOList;
 	}
 
 	/*
@@ -140,7 +187,7 @@ public class JarManagerAPIService {
 					public void run() {
 
 						String fileName = (jarProjectVO.getFileName() + ".jar");
-						String[] commandLinearr =jarProjectVO.getCommandLinearr();
+						String[] commandLinearr = jarProjectVO.getCommandLinearr();
 						String key = jarProjectVO.getBeatID();
 						Process process = null;
 						JarConsole jarConsole = null;
@@ -171,16 +218,6 @@ public class JarManagerAPIService {
 
 			}
 
-			try {
-
-				logger.debug("Wait Client Send BeatID");
-				logger.debug("sleep:" + managerVO.getLoadingTime());
-				Thread.sleep(managerVO.getLoadingTime());
-
-			} catch (InterruptedException e1) {
-				logger.debug("Error:" + e1.getMessage());
-			}
-
 			managerVO.setJarProjectVOMap(jarProjectVOMap);
 			logger.debug("startJars() is executed!");
 
@@ -196,7 +233,11 @@ public class JarManagerAPIService {
 	}
 
 	/**
-	 * 重新啟動放在DeathList的JarProjectVO
+	 * 依靠DeathList的JarProjectVO來處理jarProjectVOMap
+	 * 
+	 * 重新啟動 notFindCount次數>=5的JarProjectVO
+	 * 
+	 * notFindCount<5 notFindCount++
 	 */
 	public static HashMap<String, JarProjectVO> reStart(List<JarProjectVO> DeathList,
 			HashMap<String, JarProjectVO> jarProjectVOMap) throws IOException {
@@ -208,23 +249,37 @@ public class JarManagerAPIService {
 			logger.debug("Not Alive!!");
 			logger.debug("FileName: " + deathjarProjectVO.getFileName());
 			logger.debug("BeatID: " + deathjarProjectVO.getBeatID());
-			logger.debug("destroy.....");
+			int notFindCount = jarProjectVO.getNotFindCount();
 
-			oldProcess.destroy();
+			if (notFindCount >= 5) {
 
-			String fileName = (jarProjectVO.getFileName() + ".jar");
-			String[] commandLinearr = jarProjectVO.getCommandLinearr();
+				logger.debug("destroy.....");
 
-			ProcessBuilder processBuilder = new ProcessBuilder(commandLinearr);
-			Process newProcess = processBuilder.start();
+				oldProcess.destroy();
 
-			jarProjectVO.setProcess(newProcess);
-			JarConsole jarConsole = new JarConsole(newProcess, fileName);
-			jarProjectVO.setJarConsole(jarConsole);
+				String fileName = (jarProjectVO.getFileName() + ".jar");
+				String[] commandLinearr = jarProjectVO.getCommandLinearr();
 
-			String key = jarProjectVO.getBeatID();
-			jarProjectVOMap.put(key, jarProjectVO);
-			jarConsole.start();
+				ProcessBuilder processBuilder = new ProcessBuilder(commandLinearr);
+				Process newProcess = processBuilder.start();
+
+				jarProjectVO.setProcess(newProcess);
+				jarProjectVO.setNotFindCount(0);
+				JarConsole jarConsole = new JarConsole(newProcess, fileName);
+				jarProjectVO.setJarConsole(jarConsole);
+				jarProjectVO.setIsAlive(false);
+
+				String key = jarProjectVO.getBeatID();
+				jarProjectVOMap.put(key, jarProjectVO);
+				jarConsole.start();
+			} else {
+				logger.debug("notFindCount:" + notFindCount);
+
+				logger.debug("notFindCount++");
+				jarProjectVO.setIsAlive(true);
+				notFindCount++;
+				jarProjectVO.setNotFindCount(notFindCount);
+			}
 
 		}
 		return jarProjectVOMap;
@@ -276,6 +331,8 @@ public class JarManagerAPIService {
 
 		for (HeartBeatClientVO heartBeatClientVO : heartBeatClientVOList) {
 			String hearBeatID = heartBeatClientVO.getBeatID();
+			managerConfig.getJarProjectVOMap();
+
 			jarProjectVOList.removeIf((JarProjectVO jarProjectVO) -> jarProjectVO.getBeatID().equals(hearBeatID));
 		}
 		return jarProjectVOList;
@@ -284,36 +341,17 @@ public class JarManagerAPIService {
 	/**
 	 * 取得管控的程序狀態
 	 * 
-	 * 邏輯: 1.取得現有的xml JarProjectVOList 2.取得jms裡的 List 3.裝入狀態
-	 * JarProjectVOList.vo.BeatID.equal(heartBeatClientVOList.vo.BeatID)
-	 * 
 	 * @throws JMSException
+	 * @throws IOException
 	 */
-	public static List<JarProjectVO> getJarProjectVOStatus() throws JMSException {
-		ConsumerMessage messageConsumer = new ConsumerMessage();
+	public static List<JarProjectVO> getJarProjectVOStatus(String host, int port) throws JMSException, IOException {
 
-		ApplicationContext context = new FileSystemXmlApplicationContext(xmlFile);
+		SocketClient socketClient = new SocketClient(host, port);
 
-		ManagerVO managerConfig = (ManagerVO) context.getBean("managerConfig");
+		List<JarProjectVO> jarProjectVOList = socketClient.getJarProjectVOList();
 
-		List<JarProjectVO> jarProjectVOList = managerConfig.getJarProjectVOList();
-
-		if (jarProjectVOList == null || jarProjectVOList.size() < 1) {
-			return null;
-		}
-
-		List<HeartBeatClientVO> heartBeatClientVOList = messageConsumer.getHeartBeatClientVOList();
-
-		for (JarProjectVO jarProjectVO : jarProjectVOList) {
-			for (HeartBeatClientVO heartBeatClientVO : heartBeatClientVOList) {
-				if (jarProjectVO.getBeatID().equals(heartBeatClientVO.getBeatID())) {
-					jarProjectVO.setTimeSeries(heartBeatClientVO.getTimeSeries());
-					jarProjectVO.setIsAlive(true);
-				}
-			}
-
-		}
 		return jarProjectVOList;
+
 	}
 
 	/**
@@ -324,49 +362,47 @@ public class JarManagerAPIService {
 	 * 
 	 **/
 	public static void main(String[] args) throws ClassNotFoundException, JMSException {
-		
-		
-//		xmlFile="D:\\jarTest\\JarManagerAPI.xml";
-//		startManager();
-		
-		if (args.length == 1) {
 
-			String action = args[0];
-			switch (action) {
-			case "-all":
-				getAllMethodDescription();
-				break;
+		xmlFile = "D:\\jarTest\\JarManagerAPI.xml";
+		startManager();
 
-			}
-
-		} else if (args.length > 1) {
-
-			String action = args[0];
-			xmlFile = args[1];
-
-			System.out.println("action: " + action);
-			switch (action) {
-			case "-closeManager":
-				closeManager();
-				System.out.println("關閉中...");
-				break;
-			case "-startManager":
-				startManager();
-				System.out.println("執行中...");
-				break;
-			case "action3":
-
-				break;
-			}
-
-		} else {
-
-			System.out.println("請輸入執行參數");
-			System.out.println("指令說明: -all ");
-
-		}
+		// if (args.length == 1) {
+		//
+		// String action = args[0];
+		// switch (action) {
+		// case "-all":
+		// getAllMethodDescription();
+		// break;
+		//
+		// }
+		//
+		// } else if (args.length > 1) {
+		//
+		// String action = args[0];
+		// xmlFile = args[1];
+		//
+		// System.out.println("action: " + action);
+		// switch (action) {
+		// case "-closeManager":
+		// closeManager();
+		// System.out.println("關閉中...");
+		// break;
+		// case "-startManager":
+		// startManager();
+		// System.out.println("執行中...");
+		// break;
+		// case "action3":
+		//
+		// break;
+		// }
+		//
+		// } else {
+		//
+		// System.out.println("請輸入執行參數");
+		// System.out.println("指令說明: -all ");
+		//
+		// }
 
 	}
 
-	
 }

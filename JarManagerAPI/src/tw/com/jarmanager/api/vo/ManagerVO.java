@@ -3,9 +3,19 @@ package tw.com.jarmanager.api.vo;
 import java.util.HashMap;
 import java.util.List;
 
+
+/****************
+ * jarProjectVOList: 放至初始的管理設定檔
+ * 
+ * jarProjectVOMap : 放置正在執行的各個Jar
+ * 
+ * loadingTime	   : 等待各個jar發送BeatID的時間
+ * 
+ * reCheckTime	   : 重新判別各個jar是否存活的時間
+ * 
+ * ****************/
 public class ManagerVO {
 	private List<JarProjectVO> jarProjectVOList;
-	private String folderPath;
 	private HashMap<String, JarProjectVO> jarProjectVOMap;
 	private long loadingTime;
 	private long reCheckTime;
@@ -16,12 +26,7 @@ public class ManagerVO {
 	public void setJarProjectVOList(List<JarProjectVO> jarProjectVOList) {
 		this.jarProjectVOList = jarProjectVOList;
 	}
-	public String getFolderPath() {
-		return folderPath;
-	}
-	public void setFolderPath(String folderPath) {
-		this.folderPath = folderPath;
-	}
+
 	public HashMap<String, JarProjectVO> getJarProjectVOMap() {
 		return jarProjectVOMap;
 	}

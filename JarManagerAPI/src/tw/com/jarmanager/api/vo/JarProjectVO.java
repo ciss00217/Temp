@@ -6,6 +6,34 @@ import java.util.List;
 import tw.com.jarmanager.api.service.JarConsole;
 import tw.com.jarmanager.api.service.JarManagerAPIService;
 
+
+
+
+
+/************************************************************
+ * fileName			: jar的檔案名稱
+ * 
+ * beatID			: jar所代表的ID
+ * 
+ * process			: jar所代表的記憶體位置
+ * 
+ * jarConsole		: jar要查看的Console
+ * 
+ * isAlive			: jar是否存活
+ * 
+ * filePathXMLList  : jar的XML設定檔
+ * 
+ * timeSeries		: jar送過來的發送間隔
+ * 
+ * jarFilePath		: jar的檔案位置
+ * 
+ * description		: jar的說明
+ * 
+ * notFindCount 	: jar的未執行次數
+ * 
+ * getCommandLinearr: jar的CommandLine 
+ * 
+*************************************************************/
 public class JarProjectVO {
 	private String fileName;
 	private String beatID;
@@ -16,7 +44,14 @@ public class JarProjectVO {
 	private long timeSeries;
 	private String jarFilePath;
 	private String description;
+	private int notFindCount;
 	
+	public int getNotFindCount() {
+		return notFindCount;
+	}
+	public void setNotFindCount(int notFindCount) {
+		this.notFindCount = notFindCount;
+	}
 	public String getFileName() {
 		return fileName;
 	}

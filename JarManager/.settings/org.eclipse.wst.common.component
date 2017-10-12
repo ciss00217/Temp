@@ -68,16 +68,16 @@
 		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Users/tibyby/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.21/139535a69a4239db087de9bab0bee568bf8e0b70/slf4j-api-1.7.21.jar">
 			<dependency-type>uses</dependency-type>
 		</dependent-module>
-		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/D:/com/First_Bank/WorkSpace/CSI/JarManager/src/lib/HeartBeatClient.jar">
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Users/tibyby/git/j/JarManager/JarManager/src/lib/HeartBeatClient.jar">
 			<dependency-type>uses</dependency-type>
 		</dependent-module>
-		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/D:/com/First_Bank/WorkSpace/CSI/JarManager/src/lib/JarManagerAPI.jar">
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Users/tibyby/git/j/JarManager/JarManager/src/lib/JarManagerAPI.jar">
 			<dependency-type>uses</dependency-type>
 		</dependent-module>
-		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/D:/com/First_Bank/WorkSpace/CSI/JarManager/src/lib/ojdbc14.jar">
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Users/tibyby/git/j/JarManager/JarManager/src/lib/ojdbc14.jar">
 			<dependency-type>uses</dependency-type>
 		</dependent-module>
-		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/D:/com/First_Bank/WorkSpace/CSI/JarManager/src/lib/servlet-api.jar">
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Users/tibyby/git/j/JarManager/JarManager/src/lib/servlet-api.jar">
 			<dependency-type>uses</dependency-type>
 		</dependent-module>
 	</wb-module>

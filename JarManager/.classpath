@@ -110,22 +110,22 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/com/First_Bank/WorkSpace/CSI/JarManager/src/lib/HeartBeatClient.jar" exported="true">
+	<classpathentry kind="lib" path="C:/Users/tibyby/git/j/JarManager/JarManager/src/lib/HeartBeatClient.jar" exported="true">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/com/First_Bank/WorkSpace/CSI/JarManager/src/lib/JarManagerAPI.jar" exported="true">
+	<classpathentry kind="lib" path="C:/Users/tibyby/git/j/JarManager/JarManager/src/lib/JarManagerAPI.jar" exported="true">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/com/First_Bank/WorkSpace/CSI/JarManager/src/lib/ojdbc14.jar" exported="true">
+	<classpathentry kind="lib" path="C:/Users/tibyby/git/j/JarManager/JarManager/src/lib/ojdbc14.jar" exported="true">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/com/First_Bank/WorkSpace/CSI/JarManager/src/lib/servlet-api.jar" exported="true">
+	<classpathentry kind="lib" path="C:/Users/tibyby/git/j/JarManager/JarManager/src/lib/servlet-api.jar" exported="true">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
