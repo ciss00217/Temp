@@ -56,70 +56,32 @@
 						<td>${listValue.fileName}</td>
 						<td>${listValue.beatID}</td>
 						<td><c:choose>
-								<c:when test="${listValue.isAlive}">
-									<span class="blue">${listValue.notFindCount}</span>
+								<c:when test="${listValue.notFindCount eq 0}">
 									<span class="blue">執行中</span>
 								</c:when>
-								<c:otherwise>
-									<span class="blue">${listValue.notFindCount}</span>
-									<span class="red">無反應</span>
-								</c:otherwise>
-							</c:choose></td>
-						<td><c:choose>
-								<c:when test="${listValue.isAlive}">
-								${(listValue.timeSeries)/1000} 秒
-							</c:when>
-								<c:otherwise>
-								--
-							</c:otherwise>
-							</c:choose></td>
-						<td>${listValue.description}</td>
-						<td><c:choose>
-								<c:when test="${listValue.isAlive}">
-									<a class="btn btn-default" href="#" role="button">View details</a>
+								<c:when test="${listValue.notFindCount eq 1}">
+									<span class="blue">執行中</span>
 								</c:when>
-								<c:otherwise>
-								--
+								<c:when test="${listValue.notFindCount eq 2}">
+									<span class="blue">執行中</span>
+								</c:when>
+								<c:when test="${listValue.notFindCount eq 3}">
+									<span class="blue">執行中</span>
+								</c:when>
+								<c:when test="${listValue.notFindCount eq 4}">
+									<span class="red">異常</span>
+								</c:when>
+								<c:otherwise >
+									<span class="red">準備重啟</span>
 								</c:otherwise>
 							</c:choose></td>
+						<td>${(listValue.timeSeries)/1000}秒</td>
+						<td>${listValue.description}</td>
+						<td><a class="btn btn-default" href="#" role="button">View details</a></td>
 				</c:forEach>
 		</table>
 	</div>
-<!-- 
-	<c:if test="${not empty jarProjectVOList}">
-		<div class="row">
-			<c:forEach var="listValue" items="${jarProjectVOList}">
-				<div class="col-md-4">
-					<h2>${listValue.fileName}</h2>
-					<p>ID: ${listValue.beatID}</p>
 
-					<c:choose>
-						<c:when test="${listValue.isAlive}">
-							<p>
-								狀態: <span class="blue">執行中</span>
-							</p>
-							<p>間隔發送時間: ${(listValue.timeSeries)/1000} 秒</p>
-
-						</c:when>
-
-						<c:otherwise>
-							<p>
-								狀態: <span class="red">無反應</span>
-							</p>
-
-						</c:otherwise>
-					</c:choose>
-
-					<p>
-						<a class="btn btn-default" href="#" role="button">View details</a>
-					</p>
-				</div>
-
-			</c:forEach>
-		</div>
-
-	</c:if>
- -->
 
 	<hr>
 	<footer>

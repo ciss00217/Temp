@@ -135,14 +135,12 @@ public class SocketServer extends Thread {
 							System.out.println("jarProjectVOList.json :" + json);
 							output.writeUTF(json);
 						}else{
-							System.out.println("managerVO is null");
+							System.out.println("jarProjectVOList is null");
 						}
 			
 					}
 
 					output.flush();
-					// TODO 處理IO，這邊定義protocol協定！！
-
 					break;
 				}
 			} catch (IOException e) {

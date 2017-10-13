@@ -1,18 +1,22 @@
 package tw.com.heartbeat.clinet.serivce;
 
+
+
 import javax.jms.JMSException;
 
+import org.apache.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
 import com.google.gson.Gson;
+
 import tw.com.heartbeat.clinet.vo.HeartBeatClientVO;
 import tw.com.heartbeat.consumer.ConsumerMessage;
 import tw.com.heartbeat.producer.ProducerMessage;
 
 public class HeartBeatService {
-	private static final Logger logger = LogManager.getLogger(HeartBeatService.class);
+	private static final org.apache.log4j.Logger logger = LogManager.getLogger(HeartBeatService.class);
 	private ProducerMessage producerMessage;
 	private ConsumerMessage consumerMessage;
 	private ApplicationContext context = null;

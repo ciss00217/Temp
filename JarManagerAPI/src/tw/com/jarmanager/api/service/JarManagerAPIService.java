@@ -27,6 +27,7 @@ import tw.com.heartbeat.clinet.vo.HeartBeatClientVO;
 import tw.com.jarmanager.api.consumer.ConsumerMessage;
 import tw.com.jarmanager.api.socket.SocketClient;
 import tw.com.jarmanager.api.socket.SocketServer;
+import tw.com.jarmanager.api.util.ProcessUtial;
 import tw.com.jarmanager.api.vo.AnnotationVO;
 import tw.com.jarmanager.api.vo.JarProjectVO;
 import tw.com.jarmanager.api.vo.ManagerVO;
@@ -156,7 +157,6 @@ public class JarManagerAPIService {
 			forJsonJarVO.setDescription(jarProjectVO.getDescription());
 			forJsonJarVO.setFileName(jarProjectVO.getFileName());
 			forJsonJarVO.setFilePathXMLList(jarProjectVO.getFilePathXMLList());
-			forJsonJarVO.setIsAlive(jarProjectVO.getIsAlive());
 			forJsonJarVO.setJarFilePath(jarProjectVO.getJarFilePath());
 			forJsonJarVO.setNotFindCount(jarProjectVO.getNotFindCount());
 			forJsonJarVO.setTimeSeries(jarProjectVO.getTimeSeries());
@@ -180,6 +180,8 @@ public class JarManagerAPIService {
 			List<JarProjectVO> jarProjectVOList = managerVO.getJarProjectVOList();
 
 			HashMap<String, JarProjectVO> jarProjectVOMap = new HashMap<String, JarProjectVO>();
+
+			ProcessUtial processUtial = new ProcessUtial();
 
 			for (JarProjectVO jarProjectVO : jarProjectVOList) {
 				Thread th = new Thread(new Runnable() {
@@ -205,8 +207,9 @@ public class JarManagerAPIService {
 							logger.debug("Error:" + e.getMessage());
 
 						}
+						Long pid = processUtial.getProcessID(process);
 
-						jarProjectVO.setProcess(process);
+						jarProjectVO.setPid(pid);
 						jarProjectVO.setJarConsole(jarConsole);
 						logger.debug("process.isAlive()! :" + process.isAlive());
 						jarProjectVOMap.put(key, jarProjectVO);
@@ -241,10 +244,11 @@ public class JarManagerAPIService {
 	 */
 	public static HashMap<String, JarProjectVO> reStart(List<JarProjectVO> DeathList,
 			HashMap<String, JarProjectVO> jarProjectVOMap) throws IOException {
+		ProcessUtial processUtial = new ProcessUtial();
 
 		for (JarProjectVO deathjarProjectVO : DeathList) {
 			JarProjectVO jarProjectVO = jarProjectVOMap.get(deathjarProjectVO.getBeatID());
-			Process oldProcess = jarProjectVO.getProcess();
+			Long pid = jarProjectVO.getPid();
 
 			logger.debug("Not Alive!!");
 			logger.debug("FileName: " + deathjarProjectVO.getFileName());
@@ -255,7 +259,7 @@ public class JarManagerAPIService {
 
 				logger.debug("destroy.....");
 
-				oldProcess.destroy();
+				processUtial.destoryProcess(pid);
 
 				String fileName = (jarProjectVO.getFileName() + ".jar");
 				String[] commandLinearr = jarProjectVO.getCommandLinearr();
@@ -263,11 +267,12 @@ public class JarManagerAPIService {
 				ProcessBuilder processBuilder = new ProcessBuilder(commandLinearr);
 				Process newProcess = processBuilder.start();
 
-				jarProjectVO.setProcess(newProcess);
+				Long newPid = processUtial.getProcessID(newProcess);
+				
+				jarProjectVO.setPid(newPid);
 				jarProjectVO.setNotFindCount(0);
 				JarConsole jarConsole = new JarConsole(newProcess, fileName);
 				jarProjectVO.setJarConsole(jarConsole);
-				jarProjectVO.setIsAlive(false);
 
 				String key = jarProjectVO.getBeatID();
 				jarProjectVOMap.put(key, jarProjectVO);
@@ -276,7 +281,6 @@ public class JarManagerAPIService {
 				logger.debug("notFindCount:" + notFindCount);
 
 				logger.debug("notFindCount++");
-				jarProjectVO.setIsAlive(true);
 				notFindCount++;
 				jarProjectVO.setNotFindCount(notFindCount);
 			}

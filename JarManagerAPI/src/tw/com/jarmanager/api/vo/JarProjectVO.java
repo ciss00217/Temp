@@ -15,7 +15,7 @@ import tw.com.jarmanager.api.service.JarManagerAPIService;
  * 
  * beatID			: jar所代表的ID
  * 
- * process			: jar所代表的記憶體位置
+ * pid				: jar process的PID
  * 
  * jarConsole		: jar要查看的Console
  * 
@@ -37,15 +37,20 @@ import tw.com.jarmanager.api.service.JarManagerAPIService;
 public class JarProjectVO {
 	private String fileName;
 	private String beatID;
-	private Process process;
 	private JarConsole jarConsole;
-	private Boolean isAlive;
 	private List<String> filePathXMLList;
 	private long timeSeries;
 	private String jarFilePath;
 	private String description;
 	private int notFindCount;
+	private Long pid;
 	
+	public Long getPid() {
+		return pid;
+	}
+	public void setPid(Long pid) {
+		this.pid = pid;
+	}
 	public int getNotFindCount() {
 		return notFindCount;
 	}
@@ -64,24 +69,14 @@ public class JarProjectVO {
 	public void setBeatID(String beatID) {
 		this.beatID = beatID;
 	}
-	public Process getProcess() {
-		return process;
-	}
-	public void setProcess(Process process) {
-		this.process = process;
-	}
+
 	public JarConsole getJarConsole() {
 		return jarConsole;
 	}
 	public void setJarConsole(JarConsole jarConsole) {
 		this.jarConsole = jarConsole;
 	}
-	public Boolean getIsAlive() {
-		return isAlive;
-	}
-	public void setIsAlive(Boolean isAlive) {
-		this.isAlive = isAlive;
-	}
+
 	public List<String> getFilePathXMLList() {
 		return filePathXMLList;
 	}

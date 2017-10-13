@@ -48,6 +48,8 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind'
     compile 'com.google.code.gson:gson:2.8.1'
     compile 'mysql:mysql-connector-java:5.1.39'
+
+
     compile group: 'net.java.dev.jna', name: 'jna-platform', version: '4.1.0'
     compile fileTree(dir: 'lib', include: '*.jar')
 }
