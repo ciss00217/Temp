@@ -34,7 +34,7 @@ public class ConsumerMessage {
 		try {
 
 			RabbitFactory RabbitFactory = new RabbitFactory();
-			
+
 			Destination destination = RabbitFactory.CreateRabbitDestination();
 
 			this.destination = destination;
@@ -58,34 +58,38 @@ public class ConsumerMessage {
 	public boolean checkMessage(String beatID) throws JMSException {
 		String text;
 
-		queueBrowser = session.createBrowser((Queue) destination);
+		if (queueBrowser == null) {
+			queueBrowser = session.createBrowser((Queue) destination);
 
-		enumeration = queueBrowser.getEnumeration();
+		} else {
 
-		while (enumeration.hasMoreElements()) {
-			Message message = (Message) enumeration.nextElement();
+			enumeration = queueBrowser.getEnumeration();
 
-			text = Util.convertMsg(message);
+			while (enumeration.hasMoreElements()) {
+				Message message = (Message) enumeration.nextElement();
 
-			logger.debug("peek:" + text);
+				text = Util.convertMsg(message);
 
-			HeartBeatClientVO heartBeatClientVO = gson.fromJson(text, HeartBeatClientVO.class);
+				logger.debug("peek:" + text);
 
-			String messageBeatID = heartBeatClientVO.getBeatID();
+				HeartBeatClientVO heartBeatClientVO = gson.fromJson(text, HeartBeatClientVO.class);
 
-			logger.debug("check:");
-			logger.debug("beatID:" + beatID);
-			logger.debug("messageBeatID:" + messageBeatID);
+				String messageBeatID = heartBeatClientVO.getBeatID();
 
-			if (null != messageBeatID && messageBeatID.equals(beatID)) {
+				logger.debug("check:");
+				logger.debug("beatID:" + beatID);
+				logger.debug("messageBeatID:" + messageBeatID);
 
-				logger.debug("exist: " + messageBeatID);
-				return false;
+				if (null != messageBeatID && messageBeatID.equals(beatID)) {
+
+					logger.debug("exist: " + messageBeatID);
+					return false;
+				}
 			}
+			enumeration = null;
+			logger.debug("beatID:" + beatID);
+			logger.debug("not exist");
 		}
-		logger.debug("beatID:" + beatID);
-		logger.debug("not exist");
-
 		return true;
 	}
 

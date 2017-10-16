@@ -17,7 +17,7 @@ public class ProducerMessage {
 	private static final Logger logger = LogManager.getLogger(ProducerMessage.class);
 	MessageProducer producer = null;
 	TextMessage textMessage = null;
-
+	
 	public void send(String mseeage) throws Exception {
 		try {
 			logger.debug("send:" + mseeage);
