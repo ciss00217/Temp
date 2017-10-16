@@ -7,19 +7,17 @@ import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.MessageConsumer;
 import javax.jms.Queue;
 import javax.jms.QueueBrowser;
 import javax.jms.Session;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.google.gson.Gson;
 
 import tw.com.heartbeat.clinet.vo.HeartBeatClientVO;
+import tw.com.heartbeat.factory.RabbitFactory;
 import tw.com.jms.util.Util;
 
 public class ConsumerMessage {
@@ -34,11 +32,14 @@ public class ConsumerMessage {
 
 	public ConsumerMessage(String destinationName) throws JMSException {
 		try {
-			ApplicationContext context = new ClassPathXmlApplicationContext("HeatBeatClinetBeans.xml");
 
-			this.destination = (Destination) context.getBean(destinationName);
+			RabbitFactory RabbitFactory = new RabbitFactory();
+			
+			Destination destination = RabbitFactory.CreateRabbitDestination();
 
-			ConnectionFactory connectionFactory = (ConnectionFactory) context.getBean("heartBeatConnectionFactory");
+			this.destination = destination;
+
+			ConnectionFactory connectionFactory = RabbitFactory.CreateRabbitConnectionFactory();
 
 			this.connection = connectionFactory.createConnection();
 
@@ -71,7 +72,7 @@ public class ConsumerMessage {
 			HeartBeatClientVO heartBeatClientVO = gson.fromJson(text, HeartBeatClientVO.class);
 
 			String messageBeatID = heartBeatClientVO.getBeatID();
-			
+
 			logger.debug("check:");
 			logger.debug("beatID:" + beatID);
 			logger.debug("messageBeatID:" + messageBeatID);
@@ -84,7 +85,6 @@ public class ConsumerMessage {
 		}
 		logger.debug("beatID:" + beatID);
 		logger.debug("not exist");
-
 
 		return true;
 	}

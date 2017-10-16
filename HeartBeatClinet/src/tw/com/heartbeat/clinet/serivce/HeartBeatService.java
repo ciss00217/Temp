@@ -1,37 +1,31 @@
 package tw.com.heartbeat.clinet.serivce;
 
-
-
 import javax.jms.JMSException;
 
-import org.apache.log4j.LogManager;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.google.gson.Gson;
 
 import tw.com.heartbeat.clinet.vo.HeartBeatClientVO;
 import tw.com.heartbeat.consumer.ConsumerMessage;
 import tw.com.heartbeat.producer.ProducerMessage;
+import tw.com.jms.util.XMLParser;
 
 public class HeartBeatService {
-	private static final org.apache.log4j.Logger logger = LogManager.getLogger(HeartBeatService.class);
+	private static final Logger logger = LogManager.getLogger(HeartBeatService.class);
 	private ProducerMessage producerMessage;
 	private ConsumerMessage consumerMessage;
-	private ApplicationContext context = null;
 	private HeartBeatClientVO heartBeatClientVO = null;
 	Gson gson = null;
 
 	public HeartBeatService() {
 		this.gson = new Gson();
-		this.context = new ClassPathXmlApplicationContext("HeatBeatClinetBeans.xml");
 		this.producerMessage = creartProducerMessage();
 		this.consumerMessage = creartConsumerMessage();
 	}
 
 	public HeartBeatService(HeartBeatClientVO heartBeatClientVO) {
-		this.context = new ClassPathXmlApplicationContext("HeatBeatClinetBeans.xml");
 		this.heartBeatClientVO = heartBeatClientVO;
 		this.producerMessage = creartProducerMessage();
 		this.consumerMessage = creartConsumerMessage();
@@ -47,11 +41,11 @@ public class HeartBeatService {
 				String beatString = gson.toJson(heartBeatClientVO);
 				try {
 					if (consumerMessage.checkMessage(beatID)) {
-						logger.debug("send: beatID:"+beatID);
-						
+						logger.debug("send: beatID:" + beatID);
+
 						producerMessage.send(beatString);
-					}else{
-						logger.debug("beatID: "+beatID+" exist");
+					} else {
+						logger.debug("beatID: " + beatID + " exist");
 					}
 				} catch (Exception e) {
 					logger.debug("Error: " + e.getMessage());
@@ -67,8 +61,28 @@ public class HeartBeatService {
 			@Override
 			public void run() {
 
-				ApplicationContext context = new ClassPathXmlApplicationContext("HeatBeatClinetBeans.xml");
-				HeartBeatClientVO heartBeatClientVO = (HeartBeatClientVO) context.getBean("heartBeatClientVO");
+				HeartBeatClientVO heartBeatClientVO = new HeartBeatClientVO();
+
+				XMLParser XMLParser = new XMLParser();
+
+				String beatID = XMLParser.getXMLText("heartBeatClientVO", "beatID",
+						"D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
+				String fileName = XMLParser.getXMLText("heartBeatClientVO", "fileName",
+						"D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
+				String timeSeriesStr = XMLParser.getXMLText("heartBeatClientVO", "timeSeries",
+						"D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
+
+				Long timeSeries = null;
+
+				if (timeSeriesStr == null) {
+					timeSeries = null;
+				} else {
+					timeSeries = Long.parseLong(timeSeriesStr);
+				}
+
+				heartBeatClientVO.setBeatID(beatID);
+				heartBeatClientVO.setFileName(fileName);
+				heartBeatClientVO.setTimeSeries(timeSeries);
 
 				try {
 					ProducerMessage producerMessage = creartProducerMessage();
@@ -80,7 +94,7 @@ public class HeartBeatService {
 					String beatString = gson.toJson(heartBeatClientVO);
 
 					while (true) {
-						String beatID = heartBeatClientVO.getBeatID();
+						beatID = heartBeatClientVO.getBeatID();
 
 						if (consumerMessage.checkMessage(beatID)) {
 

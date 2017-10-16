@@ -10,8 +10,8 @@ import javax.jms.TextMessage;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import tw.com.heartbeat.factory.RabbitFactory;
 
 public class ProducerMessage {
 	private static final Logger logger = LogManager.getLogger(ProducerMessage.class);
@@ -30,12 +30,12 @@ public class ProducerMessage {
 
 	public ProducerMessage(String destinationName) throws JMSException {
 
-		ApplicationContext context = new ClassPathXmlApplicationContext("HeatBeatClinetBeans.xml");
 
-		Destination rmqDestination = (Destination) context.getBean(destinationName);
+		RabbitFactory RabbitFactory = new RabbitFactory();
 
-		ConnectionFactory connectionFactory = (ConnectionFactory) context.getBean("heartBeatConnectionFactory");
+		Destination rmqDestination = RabbitFactory.CreateRabbitDestination();
 
+		ConnectionFactory connectionFactory =RabbitFactory.CreateRabbitConnectionFactory();
 		Connection connection = connectionFactory.createConnection();
 
 		connection.start();
