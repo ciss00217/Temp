@@ -20,7 +20,7 @@
 		</div>
          <ul class="nav navbar-nav">
                 <li><a data-toggle="tab" href="#home">Start</a></li>
-                <li><a  href="/JarManager/JarPeojectVOs">Page 1</a></li>
+                <li><a  href="/JarManager/JarProjectVOs">Page 1</a></li>
                 <li><a data-toggle="tab" href="#menu2">設定</a></li>
             </ul>
       </div>

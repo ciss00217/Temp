@@ -85,7 +85,15 @@ public class JarManagerService {
 		jarManagerAPIService.setXmlFilePath(xmlpath);
 
 		return jarManagerAPIService.addJarProjectVOXml(jarProjectVO);
+	}
+	
+	public boolean deleteJarProjectVOXml(List<String> ids) throws IOException, JMSException {
+		ApplicationContext context = new FileSystemXmlApplicationContext("classpath:jarmanager-config.xml");
+		String xmlpath = (String) context.getBean("xmlpath");
+		JarManagerAPIService jarManagerAPIService = new JarManagerAPIService();
+		jarManagerAPIService.setXmlFilePath(xmlpath);
 
+		return jarManagerAPIService.deleteJarProjectVOXml(ids);
 	}
 
 }

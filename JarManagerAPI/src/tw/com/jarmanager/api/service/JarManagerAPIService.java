@@ -74,15 +74,51 @@ public class JarManagerAPIService {
 
 		try {
 			logger.debug("addJarProjectVOXml:addJarProjectVOXml");
-			
+
 			File file = new File(xmlFile);
 			JAXBContext jaxbContext = JAXBContext.newInstance(JarManagerAPIXMLVO.class);
 
 			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 			JarManagerAPIXMLVO jarManagerAPIXMLVO = (JarManagerAPIXMLVO) jaxbUnmarshaller.unmarshal(file);
-			
+
 			jarManagerAPIXMLVO.getJarProjectVOList().add(jarProjectVO);
+
+			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+			// output pretty printed
+			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+			jaxbMarshaller.marshal(jarManagerAPIXMLVO, file);
+			jaxbMarshaller.marshal(jarManagerAPIXMLVO, System.out);
+
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
+	}
+
+	public boolean deleteJarProjectVOXml(List<String> jarIDList) {
+
+		try {
+			logger.debug("addJarProjectVOXml:addJarProjectVOXml");
+
+			File file = new File(xmlFile);
+			JAXBContext jaxbContext = JAXBContext.newInstance(JarManagerAPIXMLVO.class);
+
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+			JarManagerAPIXMLVO jarManagerAPIXMLVO = (JarManagerAPIXMLVO) jaxbUnmarshaller.unmarshal(file);
+
+			List<JarProjectVO> jarProjectVOList = jarManagerAPIXMLVO.getJarProjectVOList();
+
+			for (String id : jarIDList) {
+				jarProjectVOList.removeIf((JarProjectVO jarProjectVO) -> jarProjectVO.getBeatID().equals(id));
+			}
 			
+			jarManagerAPIXMLVO.setJarProjectVOList(jarProjectVOList);
+
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
 			// output pretty printed

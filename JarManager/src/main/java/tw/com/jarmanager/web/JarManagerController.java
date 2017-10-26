@@ -1,6 +1,7 @@
 package tw.com.jarmanager.web;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jms.JMSException;
@@ -13,6 +14,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -60,8 +62,8 @@ public class JarManagerController {
 
 	}
 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public ModelAndView jarManager() {
+	@RequestMapping(value = "/JarProjectVO/{id:.+}", method = RequestMethod.GET,produces = "application/json")
+	public @ResponseBody JarProjectVO getJarProjectVO(@PathVariable("id") String id) {
 
 		logger.debug("jarManager() is executed!  ");
 
@@ -69,17 +71,26 @@ public class JarManagerController {
 		List<JarProjectVO> jarProjectVOList = null;
 
 		try {
-			jarProjectVOList = jarManagerService.getJarProjectVOStatus();
+			// jarProjectVOList = jarManagerService.getJarProjectVOStatus();
+
+			jarProjectVOList = jarManagerService.getXMLJarPeojectVOs();
+
+			if (jarProjectVOList != null && jarProjectVOList.size() > 0) {
+				for (JarProjectVO jarProjectVO : jarProjectVOList) {
+					if (id.equals(jarProjectVO.getBeatID())) {
+						JarProjectVO jarProjectVO1 = jarProjectVO;
+						logger.debug("jarManager() is executed!  ");
+						return jarProjectVO;
+					}
+				}
+			}
+
 		} catch (Exception e) {
 			logger.debug("Error: " + e.getMessage());
 		}
 
-		ModelAndView model = new ModelAndView();
-		model.setViewName("jarManager");
-		model.addObject("heartBeatClientVOList", heartBeatClientVOList);
-		model.addObject("jarProjectVOList", jarProjectVOList);
 
-		return model;
+		return null;
 
 	}
 
@@ -96,7 +107,24 @@ public class JarManagerController {
 
 	}
 
-	@RequestMapping(value = "/JarPeojectVOs", method = RequestMethod.GET)
+	@RequestMapping(value = "/JarProjectVO/{id:.+}", method = RequestMethod.DELETE)
+	public @ResponseBody boolean deleteJarPeojectVOs(@PathVariable("id") String id) {
+
+		List<String> ids = new ArrayList<String>();
+		ids.add(id);
+
+		boolean isSucess = false;
+		try {
+			isSucess = jarManagerService.deleteJarProjectVOXml(ids);
+		} catch (IOException | JMSException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return isSucess;
+
+	}
+
+	@RequestMapping(value = "/JarProjectVOs", method = RequestMethod.GET)
 	public ModelAndView JarPeojectVOs() {
 		boolean isRun = true;
 		logger.debug("JarPeojectVOs is executed!  ");
