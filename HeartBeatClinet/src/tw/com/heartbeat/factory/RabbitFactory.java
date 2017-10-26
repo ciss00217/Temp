@@ -6,20 +6,21 @@ import com.rabbitmq.jms.admin.RMQDestination;
 import tw.com.jms.util.XMLParser;
 
 public class RabbitFactory {
+	String filePath;
+
+	public RabbitFactory(String filePath) {
+		this.filePath = filePath;
+	}
+
 	public RMQDestination CreateRabbitDestination() {
 		XMLParser XMLParser = new XMLParser();
 
-		String amqpStr = XMLParser.getXMLText("heartBeatDestination", "amqp",
-				"D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
+		String amqpStr = XMLParser.getXMLText("heartBeatDestination", "amqp", filePath);
 		boolean amqp = Boolean.valueOf(amqpStr);
-		String amqpExchangeName = XMLParser.getXMLText("heartBeatDestination", "amqpExchangeName",
-				"D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
-		String amqpQueueName = XMLParser.getXMLText("heartBeatDestination", "amqpQueueName",
-				"D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
-		String routingKey = XMLParser.getXMLText("heartBeatDestination", "amqpRoutingKey",
-				"D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
-		String destinationName = XMLParser.getXMLText("heartBeatDestination", "destinationName",
-				"D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
+		String amqpExchangeName = XMLParser.getXMLText("heartBeatDestination", "amqpExchangeName", filePath);
+		String amqpQueueName = XMLParser.getXMLText("heartBeatDestination", "amqpQueueName", filePath);
+		String routingKey = XMLParser.getXMLText("heartBeatDestination", "amqpRoutingKey", filePath);
+		String destinationName = XMLParser.getXMLText("heartBeatDestination", "destinationName", filePath);
 
 		RMQDestination rmqDestination = new RMQDestination();
 		rmqDestination.setAmqp(amqp);
@@ -35,17 +36,12 @@ public class RabbitFactory {
 	public RMQConnectionFactory CreateRabbitConnectionFactory() {
 		XMLParser XMLParser = new XMLParser();
 
-		String username = XMLParser.getXMLText("heartBeatConnectionFactory", "username",
-				"D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
+		String username = XMLParser.getXMLText("heartBeatConnectionFactory", "username", filePath);
 
-		String password = XMLParser.getXMLText("heartBeatConnectionFactory", "password",
-				"D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
-		String virtualHost = XMLParser.getXMLText("heartBeatConnectionFactory", "virtualHost",
-				"D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
-		String host = XMLParser.getXMLText("heartBeatConnectionFactory", "host",
-				"D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
-		String portStr = XMLParser.getXMLText("heartBeatConnectionFactory", "port",
-				"D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
+		String password = XMLParser.getXMLText("heartBeatConnectionFactory", "password", filePath);
+		String virtualHost = XMLParser.getXMLText("heartBeatConnectionFactory", "virtualHost", filePath);
+		String host = XMLParser.getXMLText("heartBeatConnectionFactory", "host", filePath);
+		String portStr = XMLParser.getXMLText("heartBeatConnectionFactory", "port", filePath);
 
 		int port = Integer.parseInt(portStr);
 

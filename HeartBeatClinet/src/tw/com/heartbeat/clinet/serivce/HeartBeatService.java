@@ -1,5 +1,7 @@
 package tw.com.heartbeat.clinet.serivce;
 
+import java.time.LocalDateTime;
+
 import javax.jms.JMSException;
 
 import org.apache.logging.log4j.LogManager;
@@ -14,21 +16,25 @@ import tw.com.jms.util.XMLParser;
 
 public class HeartBeatService {
 	private static final Logger logger = LogManager.getLogger(HeartBeatService.class);
+	public static String xmlFilePath;
 	private ProducerMessage producerMessage;
 	private ConsumerMessage consumerMessage;
 	private HeartBeatClientVO heartBeatClientVO = null;
 	Gson gson = null;
 
-	public HeartBeatService() {
+	public HeartBeatService(String xmlFilePath) {
 		this.gson = new Gson();
-		this.producerMessage = creartProducerMessage();
-		this.consumerMessage = creartConsumerMessage();
+		this.xmlFilePath = xmlFilePath;
+		this.producerMessage = creartProducerMessage(xmlFilePath);
+		this.consumerMessage = creartConsumerMessage(xmlFilePath);
 	}
 
-	public HeartBeatService(HeartBeatClientVO heartBeatClientVO) {
+	public HeartBeatService(HeartBeatClientVO heartBeatClientVO, String xmlFilePath) {
 		this.heartBeatClientVO = heartBeatClientVO;
-		this.producerMessage = creartProducerMessage();
-		this.consumerMessage = creartConsumerMessage();
+		this.xmlFilePath = xmlFilePath;
+		this.producerMessage = creartProducerMessage(xmlFilePath);
+		this.consumerMessage = creartConsumerMessage(xmlFilePath);
+
 		this.gson = new Gson();
 	}
 
@@ -38,6 +44,9 @@ public class HeartBeatService {
 			@Override
 			public void run() {
 				String beatID = heartBeatClientVO.getBeatID();
+
+				heartBeatClientVO.setLocalDateTime(LocalDateTime.now());
+
 				String beatString = gson.toJson(heartBeatClientVO);
 				try {
 					if (consumerMessage.checkMessage(beatID)) {
@@ -65,12 +74,10 @@ public class HeartBeatService {
 
 				XMLParser XMLParser = new XMLParser();
 
-				String beatID = XMLParser.getXMLText("heartBeatClientVO", "beatID",
-						"D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
-				String fileName = XMLParser.getXMLText("heartBeatClientVO", "fileName",
-						"D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
+				String beatID = XMLParser.getXMLText("heartBeatClientVO", "beatID", xmlFilePath);
+				String fileName = XMLParser.getXMLText("heartBeatClientVO", "fileName", xmlFilePath);
 				String timeSeriesStr = XMLParser.getXMLText("heartBeatClientVO", "timeSeries",
-						"D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
+						"src\\HeatBeatClinetBeans.xml");
 
 				Long timeSeries = null;
 
@@ -83,11 +90,12 @@ public class HeartBeatService {
 				heartBeatClientVO.setBeatID(beatID);
 				heartBeatClientVO.setFileName(fileName);
 				heartBeatClientVO.setTimeSeries(timeSeries);
+				heartBeatClientVO.setLocalDateTime(LocalDateTime.now());
 
-				try {
-					ProducerMessage producerMessage = creartProducerMessage();
+			
+					ProducerMessage producerMessage = creartProducerMessage(xmlFilePath);
 
-					ConsumerMessage consumerMessage = creartConsumerMessage();
+					ConsumerMessage consumerMessage = creartConsumerMessage(xmlFilePath);
 
 					Gson gson = new Gson();
 
@@ -96,17 +104,25 @@ public class HeartBeatService {
 					while (true) {
 						beatID = heartBeatClientVO.getBeatID();
 
-						if (consumerMessage.checkMessage(beatID)) {
+						try {
+							if (consumerMessage.checkMessage(beatID)) {
 
-							producerMessage.send(beatString);
+								producerMessage.send(beatString);
+							}
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
 						logger.debug("sleep: " + heartBeatClientVO.getTimeSeries());
-						Thread.sleep(heartBeatClientVO.getTimeSeries());
+						try {
+							Thread.sleep(heartBeatClientVO.getTimeSeries());
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 
-				} catch (Exception e) {
-					logger.debug("Error: " + e.getMessage());
-				}
+				
 
 			}
 		});
@@ -114,11 +130,11 @@ public class HeartBeatService {
 
 	}
 
-	public static ConsumerMessage creartConsumerMessage() {
+	public static ConsumerMessage creartConsumerMessage(String xmlFilePath) {
 		ConsumerMessage consumerMessage = null;
 		try {
 
-			consumerMessage = new ConsumerMessage("heartBeatDestination");
+			consumerMessage = new ConsumerMessage(xmlFilePath);
 
 		} catch (JMSException e) {
 			logger.debug("Error: " + e.getMessage());
@@ -135,11 +151,11 @@ public class HeartBeatService {
 		this.heartBeatClientVO = heartBeatClientVO;
 	}
 
-	public static ProducerMessage creartProducerMessage() {
+	public static ProducerMessage creartProducerMessage(String xmlFilePath) {
 		ProducerMessage producerMessage = null;
 		try {
 
-			producerMessage = new ProducerMessage("heartBeatDestination");
+			producerMessage = new ProducerMessage(xmlFilePath);
 
 		} catch (JMSException e) {
 			logger.debug("Error: " + e.getMessage());
@@ -148,9 +164,9 @@ public class HeartBeatService {
 		return producerMessage;
 	}
 
-	public static void main(String[] args) {
-
-		startBeat();
+	public static void main(String[] args) throws InterruptedException {
+		HeartBeatService HeartBeatService = new HeartBeatService("D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
+		HeartBeatService.startBeat();
 	}
 
 }

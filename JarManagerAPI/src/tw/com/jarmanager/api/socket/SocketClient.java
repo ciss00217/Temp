@@ -11,7 +11,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import tw.com.jarmanager.api.vo.JarProjectVO;
-import tw.com.jarmanager.api.vo.ManagerVO;
 
 public class SocketClient {
 	static String host = "";

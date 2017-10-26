@@ -18,15 +18,21 @@
 		<div class="navbar-header">
 			<a class="navbar-brand" href="/JarManager/index">JarManager</a>
 		</div>
-	</div>
+         <ul class="nav navbar-nav">
+                <li><a data-toggle="tab" href="#home">Start</a></li>
+                <li><a  href="/JarManager/JarPeojectVOs">Page 1</a></li>
+                <li><a data-toggle="tab" href="#menu2">設定</a></li>
+            </ul>
+      </div>
+      
 </nav>
 
 <div class="jumbotron">
 	<div class="container">
 		<h1>管理程序系統</h1>
-		<p>開關說明</p>
+		<p>開始</p>
 		<p>
-			<a class="btn btn-primary btn-lg" href="/JarManager/Delete/queue" role="button">Clear Queue</a>
+			<a class="btn btn-primary btn-lg" href="/JarManager/Delete/queue" role="button">Start</a>
 		</p>
 	</div>
 </div>
@@ -55,7 +61,9 @@
 					<tr>
 						<td>${listValue.fileName}</td>
 						<td>${listValue.beatID}</td>
-						<td><c:choose>
+						<td>
+						${listValue.notFindCount}
+						<c:choose>
 								<c:when test="${listValue.notFindCount eq 0}">
 									<span class="blue">執行中</span>
 								</c:when>

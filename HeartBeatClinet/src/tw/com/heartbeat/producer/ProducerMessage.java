@@ -28,10 +28,10 @@ public class ProducerMessage {
 		}
 	}
 
-	public ProducerMessage(String destinationName) throws JMSException {
+	public ProducerMessage(String xmlFilePath) throws JMSException {
 
 
-		RabbitFactory RabbitFactory = new RabbitFactory();
+		RabbitFactory RabbitFactory = new RabbitFactory(xmlFilePath);
 
 		Destination rmqDestination = RabbitFactory.CreateRabbitDestination();
 

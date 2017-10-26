@@ -2,7 +2,6 @@ package tw.com.jarmanager.api.consumer;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -18,15 +17,12 @@ import javax.jms.Session;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import com.google.gson.Gson;
 
 import tw.com.heartbeat.clinet.vo.HeartBeatClientVO;
+import tw.com.jarmanager.api.factory.RabbitFactory;
 import tw.com.jarmanager.api.service.JarManagerAPIService;
-import tw.com.jarmanager.api.vo.JarProjectVO;
 import tw.com.jms.util.Util;
 
 public class ConsumerMessage {
@@ -38,11 +34,11 @@ public class ConsumerMessage {
 
 	public ConsumerMessage() throws JMSException {
 		try {
-			ApplicationContext context = new FileSystemXmlApplicationContext(JarManagerAPIService.xmlFile);
+			RabbitFactory rabbitFactory = new RabbitFactory(JarManagerAPIService.xmlFile);
 
-			this.destination = (Destination) context.getBean("heartBeatDestination");
+			this.destination = rabbitFactory.CreateRabbitDestination();
 
-			ConnectionFactory connectionFactory = (ConnectionFactory) context.getBean("heartBeatConnectionFactory");
+			ConnectionFactory connectionFactory = rabbitFactory.CreateRabbitConnectionFactory();
 
 			this.connection = connectionFactory.createConnection();
 

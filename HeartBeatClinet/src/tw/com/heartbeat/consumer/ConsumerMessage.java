@@ -7,6 +7,7 @@ import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.MessageConsumer;
 import javax.jms.Queue;
 import javax.jms.QueueBrowser;
 import javax.jms.Session;
@@ -28,12 +29,13 @@ public class ConsumerMessage {
 	private Session session;
 	private QueueBrowser queueBrowser;
 	private Enumeration<?> enumeration;
+	private MessageConsumer messageConsumer;
 	private Gson gson;
 
-	public ConsumerMessage(String destinationName) throws JMSException {
+	public ConsumerMessage(String xmlFilePath) throws JMSException {
 		try {
 
-			RabbitFactory RabbitFactory = new RabbitFactory();
+			RabbitFactory RabbitFactory = new RabbitFactory(xmlFilePath);
 
 			Destination destination = RabbitFactory.CreateRabbitDestination();
 
@@ -55,6 +57,10 @@ public class ConsumerMessage {
 		}
 	}
 
+	/**
+	 * checkMessage 的判別有時會miss
+	 * 
+	 **/
 	public boolean checkMessage(String beatID) throws JMSException {
 		String text;
 
@@ -65,26 +71,42 @@ public class ConsumerMessage {
 
 			enumeration = queueBrowser.getEnumeration();
 
+			int messageCount = 0;
 			while (enumeration.hasMoreElements()) {
-				Message message = (Message) enumeration.nextElement();
+				messageCount++;
 
-				text = Util.convertMsg(message);
+				if (messageCount > 200) {
+					if (messageConsumer == null) {
+						messageConsumer = session.createConsumer(destination);
+					}
+					messageConsumer.receive();
+				} else {
 
-				logger.debug("peek:" + text);
+					Message message = (Message) enumeration.nextElement();
 
-				HeartBeatClientVO heartBeatClientVO = gson.fromJson(text, HeartBeatClientVO.class);
+					text = Util.convertMsg(message);
 
-				String messageBeatID = heartBeatClientVO.getBeatID();
+					logger.debug("peek:" + text);
 
-				logger.debug("check:");
-				logger.debug("beatID:" + beatID);
-				logger.debug("messageBeatID:" + messageBeatID);
+					HeartBeatClientVO heartBeatClientVO = gson.fromJson(text, HeartBeatClientVO.class);
 
-				if (null != messageBeatID && messageBeatID.equals(beatID)) {
+					if (null != heartBeatClientVO) {
 
-					logger.debug("exist: " + messageBeatID);
-					return false;
+						String messageBeatID = heartBeatClientVO.getBeatID();
+
+						logger.debug("check:");
+						logger.debug("beatID:" + beatID);
+						logger.debug("messageBeatID:" + messageBeatID);
+
+						if (null != messageBeatID && messageBeatID.equals(beatID)) {
+
+							logger.debug("exist: " + messageBeatID);
+							return false;
+						}
+						// messageConsumer = null;
+					}
 				}
+
 			}
 			enumeration = null;
 			logger.debug("beatID:" + beatID);

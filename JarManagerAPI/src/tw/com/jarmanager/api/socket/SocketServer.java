@@ -11,10 +11,7 @@ import java.util.concurrent.Executors;
 
 import com.google.gson.Gson;
 
-import tw.com.jarmanager.api.service.JarManagerAPIService;
 import tw.com.jarmanager.api.vo.JarProjectVO;
-import tw.com.jarmanager.api.vo.ManagerVO;
-import tw.com.jarmanager.api.vo.ResponseVO;
 
 public class SocketServer extends Thread {
 	private int port;
