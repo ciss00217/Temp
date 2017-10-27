@@ -19,10 +19,10 @@ public class FactoryTest {
 		
 		JarManagerAPIService jarManagerAPIService=new JarManagerAPIService();
 	
-		jarManagerAPIService.setXmlFilePath("D:\\file.xml");
+		jarManagerAPIService.setXmlFilePath("D:\\JarManagerAPI.xml");
 		
 		JarProjectVO jarProjectVO1 = new JarProjectVO();
-		jarProjectVO1.setBeatID("QWEQEWQ");
+		jarProjectVO1.setBeatID("SFStatus");
 		jarProjectVO1.setFileName("QWEQWE");
 		jarProjectVO1.setTimeSeries(30000);
 		jarProjectVO1.setDescription("WQEQEWQ說明");
@@ -35,7 +35,7 @@ public class FactoryTest {
 		
 		
 		
-		jarManagerAPIService.addJarProjectVOXml(jarProjectVO1);
+		jarManagerAPIService.updateJarProjectVOXml(jarProjectVO1);
 	}
 
 }

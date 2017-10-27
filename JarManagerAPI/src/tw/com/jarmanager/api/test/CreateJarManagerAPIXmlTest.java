@@ -107,7 +107,7 @@ public class CreateJarManagerAPIXmlTest {
 
 		try {
 
-			File file = new File("D:\\file.xml");
+			File file = new File("D:\\JarManagerAPI.xml");
 			JAXBContext jaxbContext = JAXBContext.newInstance(JarManagerAPIXMLVO.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 

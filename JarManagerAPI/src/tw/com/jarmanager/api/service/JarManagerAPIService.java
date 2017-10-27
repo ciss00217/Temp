@@ -99,6 +99,47 @@ public class JarManagerAPIService {
 
 		return true;
 	}
+	
+	public boolean updateJarProjectVOXml(JarProjectVO jarProjectVO) {
+
+		try {
+			logger.debug("addJarProjectVOXml:addJarProjectVOXml");
+
+			File file = new File(xmlFile);
+			JAXBContext jaxbContext = JAXBContext.newInstance(JarManagerAPIXMLVO.class);
+
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+			JarManagerAPIXMLVO jarManagerAPIXMLVO = (JarManagerAPIXMLVO) jaxbUnmarshaller.unmarshal(file);
+			
+			List<JarProjectVO> list=jarManagerAPIXMLVO.getJarProjectVOList();
+			
+			for(JarProjectVO mJarProjectVO:list){
+				if(mJarProjectVO.getBeatID().equals(jarProjectVO.getBeatID())){
+					mJarProjectVO.setDescription(jarProjectVO.getDescription());
+					mJarProjectVO.setFileName(jarProjectVO.getFileName());
+					mJarProjectVO.setFilePathXMLList(jarProjectVO.getFilePathXMLList());
+					mJarProjectVO.setJarFilePath(jarProjectVO.getJarFilePath());
+					mJarProjectVO.setTimeSeries(jarProjectVO.getTimeSeries());
+				}
+			}
+
+		
+			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+			// output pretty printed
+			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+			jaxbMarshaller.marshal(jarManagerAPIXMLVO, file);
+			jaxbMarshaller.marshal(jarManagerAPIXMLVO, System.out);
+
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
+	}
 
 	public boolean deleteJarProjectVOXml(List<String> jarIDList) {
 
