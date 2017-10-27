@@ -31,6 +31,8 @@ import tw.com.jarmanager.api.service.JarConsole;
  * 
  * description : jar的說明
  * 
+ * isRun		:jar是否執行
+ * 
  * notFindCount : jar的未執行次數
  * 
  * getCommandLinearr: jar的CommandLine
@@ -39,7 +41,7 @@ import tw.com.jarmanager.api.service.JarConsole;
 
 @XmlRootElement(name = "jarProjectVO")
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder = { "fileName", "beatID", "jarFilePath", "description", "timeSeries", "filePathXMLList" })
+@XmlType(propOrder = { "fileName", "beatID", "jarFilePath", "description","isRun","timeSeries", "filePathXMLList" })
 public class JarProjectVO {
 	@XmlAttribute
 	private String id;
@@ -52,10 +54,20 @@ public class JarProjectVO {
 	@XmlElement
 	private String description;
 	@XmlElement
+	private boolean isRun;
+	@XmlElement
 	private long timeSeries;
 	@XmlElementWrapper(name = "filePathXMLList")
 	@XmlElement(name = "item")
 	private List<String> filePathXMLList;
+
+	public boolean isRun() {
+		return isRun;
+	}
+
+	public void setRun(boolean isRun) {
+		this.isRun = isRun;
+	}
 
 	private JarConsole jarConsole;
 
