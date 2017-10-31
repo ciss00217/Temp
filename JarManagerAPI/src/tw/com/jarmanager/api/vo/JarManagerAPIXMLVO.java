@@ -13,11 +13,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(propOrder = { "heartBeatConnectionFactoryVO", "heartBeatDestinationVO", "jarProjectVOList", "managerVO"})
 public class JarManagerAPIXMLVO {
-	@XmlElement
+	@XmlElement(name="heartBeatConnectionFactoryVO")
 	private HeartBeatConnectionFactoryVO heartBeatConnectionFactoryVO;
-	@XmlElement
+	@XmlElement(name="heartBeatDestinationVO")
 	private HeartBeatDestinationVO heartBeatDestinationVO;
-	@XmlElement
+	@XmlElement(name="managerVO")
 	private ManagerVO managerVO;
 
 	@XmlElementWrapper(name = "jarProjectVOList")

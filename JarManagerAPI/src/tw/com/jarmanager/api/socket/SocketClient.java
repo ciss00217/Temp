@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import tw.com.jarmanager.api.vo.JarProjectVO;
+import tw.com.jarmanager.api.vo.RequestVO;
 
 public class SocketClient {
 	static String host = "";
@@ -74,6 +75,7 @@ public class SocketClient {
 		// int port = 9527;
 		Socket socket = null;
 		List<JarProjectVO> jarProjectVOList = null;
+		Gson gson = new Gson();
 
 		try {
 			socket = new Socket(host, port);
@@ -85,14 +87,18 @@ public class SocketClient {
 
 				output = new DataOutputStream(socket.getOutputStream());
 
-				output.writeUTF("getJarProjectVOList");
+				RequestVO requestVO = new RequestVO();
+
+				requestVO.setAction("getJarProjectVOList");
+
+				String requestStr = gson.toJson(requestVO, RequestVO.class);
+
+				output.writeUTF(requestStr);
 
 				String json = input.readUTF();
 				if (json != null) {
 
-					Gson gson = new Gson();
-
-					System.out.println("getJarProjectVOList:"+json);
+					System.out.println("getJarProjectVOList:" + json);
 
 					Type listType = new TypeToken<List<JarProjectVO>>() {
 					}.getType();

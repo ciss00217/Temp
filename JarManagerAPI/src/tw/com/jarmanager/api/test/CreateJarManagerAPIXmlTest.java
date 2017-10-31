@@ -23,7 +23,7 @@ public class CreateJarManagerAPIXmlTest {
 		heartBeatConnectionFactory.setPassword("password");
 		heartBeatConnectionFactory.setHost("192.168.112.199");
 		heartBeatConnectionFactory.setPort(5672);
-		heartBeatConnectionFactory.setVirtualHost("//");
+		heartBeatConnectionFactory.setVirtualHost("/");
 		heartBeatConnectionFactory.setUsername("admin");
 
 		HeartBeatDestinationVO heartBeatDestinationVO = new HeartBeatDestinationVO();
@@ -49,7 +49,7 @@ public class CreateJarManagerAPIXmlTest {
 		jarProjectVO.setTimeSeries(30000);
 		jarProjectVO.setDescription("SFStatus說明");
 		jarProjectVO.setJarFilePath("D:\\jarFilePath\\SFStatus.jar");
-		jarProjectVO.setRun(true);
+		jarProjectVO.setNeedRun(true);
 
 		ArrayList<String> arrayList = new ArrayList<String>();
 		arrayList.add("D:\\XMLFilePath\\SFStatus.xml");
@@ -65,7 +65,7 @@ public class CreateJarManagerAPIXmlTest {
 		jarProjectVO1.setTimeSeries(30000);
 		jarProjectVO1.setDescription("SFOutboundDetail說明");
 		jarProjectVO1.setJarFilePath("D:\\jarFilePath\\SFOutboundDetail.jar");
-		jarProjectVO1.setRun(true);
+		jarProjectVO1.setNeedRun(true);
 
 		ArrayList<String> arrayList1 = new ArrayList<String>();
 		arrayList1.add("D:\\XMLFilePath\\SFOutboundDetail.xml");
@@ -80,7 +80,7 @@ public class CreateJarManagerAPIXmlTest {
 		jarProjectVO2.setTimeSeries(30000);
 		jarProjectVO2.setDescription("SFBalance說明");
 		jarProjectVO2.setJarFilePath("D:\\jarFilePath\\SFBalance.jar");
-		jarProjectVO2.setRun(true);
+		jarProjectVO2.setNeedRun(true);
 
 		ArrayList<String> arrayList2 = new ArrayList<String>();
 		arrayList2.add("D:\\XMLFilePath\\SFBalance.xml");
@@ -96,7 +96,7 @@ public class CreateJarManagerAPIXmlTest {
 		jarProjectVO3.setTimeSeries(60000);
 		jarProjectVO3.setDescription("Q2W說明");
 		jarProjectVO3.setJarFilePath("D:\\jarFilePath\\Q2W.jar");
-		jarProjectVO3.setRun(true);
+		jarProjectVO3.setNeedRun(true);
 
 		ArrayList<String> arrayList3 = new ArrayList<String>();
 		arrayList3.add("D:\\XMLFilePath\\q2w-config.xml");

@@ -31,7 +31,7 @@ import tw.com.jarmanager.api.service.JarConsole;
  * 
  * description : jar的說明
  * 
- * isRun		:jar是否執行
+ * needRun		:jar是否執行
  * 
  * notFindCount : jar的未執行次數
  * 
@@ -41,7 +41,7 @@ import tw.com.jarmanager.api.service.JarConsole;
 
 @XmlRootElement(name = "jarProjectVO")
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder = { "fileName", "beatID", "jarFilePath", "description","isRun","timeSeries", "filePathXMLList" })
+@XmlType(propOrder = { "fileName", "beatID", "jarFilePath", "description","needRun","timeSeries", "filePathXMLList" })
 public class JarProjectVO {
 	@XmlAttribute
 	private String id;
@@ -54,19 +54,24 @@ public class JarProjectVO {
 	@XmlElement
 	private String description;
 	@XmlElement
-	private boolean isRun;
+	private boolean needRun;
 	@XmlElement
 	private long timeSeries;
 	@XmlElementWrapper(name = "filePathXMLList")
 	@XmlElement(name = "item")
 	private List<String> filePathXMLList;
 
-	public boolean isRun() {
-		return isRun;
+
+	public boolean isNeedRun() {
+		return needRun;
+	}
+	
+	public boolean getNeedRun() {
+		return needRun;
 	}
 
-	public void setRun(boolean isRun) {
-		this.isRun = isRun;
+	public void setNeedRun(boolean needRun) {
+		this.needRun = needRun;
 	}
 
 	private JarConsole jarConsole;

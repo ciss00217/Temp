@@ -8,9 +8,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
+import com.rabbitmq.jms.admin.RMQConnectionFactory;
 
 import tw.com.heartbeat.clinet.vo.HeartBeatClientVO;
 import tw.com.heartbeat.consumer.ConsumerMessage;
+import tw.com.heartbeat.factory.RabbitFactory;
 import tw.com.heartbeat.producer.ProducerMessage;
 import tw.com.jms.util.XMLParser;
 
@@ -167,6 +169,11 @@ public class HeartBeatService {
 	public static void main(String[] args) throws InterruptedException {
 		HeartBeatService HeartBeatService = new HeartBeatService("D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
 		HeartBeatService.startBeat();
+		
+//		RabbitFactory RabbitFactory = new RabbitFactory("D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
+//		RMQConnectionFactory asdasda=RabbitFactory.CreateRabbitConnectionFactory(); 
+//		
+//		asdasda.set
 	}
 
 }

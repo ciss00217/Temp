@@ -213,7 +213,7 @@ public class JarManagerAPIService {
 	/***
 	 * 用來獲得JarManagerAPIXML JarProjectVOList的方法
 	 **/
-	public List<JarProjectVO> getXMLJarProjectVOList(String XMLPath) {
+	public static List<JarProjectVO> getXMLJarProjectVOList(String XMLPath) {
 		RabbitFactory rabbitFactory = new RabbitFactory(XMLPath);
 		return rabbitFactory.CreateProjectVOList();
 	}
@@ -241,6 +241,46 @@ public class JarManagerAPIService {
 
 	}
 
+	
+	
+	/***************
+	 * 流程為:
+	 * 
+	 * 1.啟動	
+	 * 		1.取得XML		
+	 * 		
+	 * 		2.轉成物件   	//插入濾除tag是false的
+	 * 
+	 * 		3.取出List<jarVO>
+	 * 
+	 *		4.迴圈執行啟動
+	 *
+	 * 
+	 * 2.檢查
+	 * 		1.濾除xml 被刪除的 		//之前沒 並且在濾除時 依靠pid 去關閉程序
+	 * 		
+	 * 		2.取得須重啟的list:
+	 * 						 
+	 * 								1. jarProjectVOMap 傳入正在執行的Map
+	 * 
+	 * 								2. 取到系統設定檔List   (並移除不執行的(isNeedRun)) //之前沒
+	 * 
+	 * 								3. 再取到有發送心跳協議的	
+	 * 
+	 * 								4. 比對正在執行的跟設定檔 如果map無 就放入deathList
+	 * 
+	 * 								5. 將map裡第一次執行的放入時間
+	 * 
+	 * 								6. deathList 放入設定檔移除掉有心跳協議的且移除間隔時間未到達的
+	 * 
+	 * 3.重啟
+	 * 
+	 * 4.放入狀態 到 socketServer
+	 * 
+	 * 5.等待
+	 * 
+	 * 
+	 * ************/
 	@AnnotationVO(description = "啟動JarManagerService 用來監控觀察底下的JAR 如果client 阻塞 或 關閉 就重啟它", methodName = "-startManager D:\\yourFileXmlPath")
 	public static void startManager() {
 
@@ -260,6 +300,13 @@ public class JarManagerAPIService {
 
 				if (exit) {
 					break;
+				}
+
+				try {
+					oldJarProjectVOMap = mapRemoveNoExitByXml(oldJarProjectVOMap);
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
 				}
 
 				List<JarProjectVO> deathList = null;
@@ -292,6 +339,54 @@ public class JarManagerAPIService {
 		}
 	}
 
+	/***
+	 * 移除不存在xml的map
+	 * 
+	 * @throws IOException
+	 * 
+	 ****/
+	public static HashMap<String, JarProjectVO> mapRemoveNoExitByXml(HashMap<String, JarProjectVO> oldJarProjectVOMap)
+			throws IOException {
+		List<JarProjectVO> jarXMLList = getXMLJarProjectVOList(xmlFile);
+
+		Set keySet = new HashSet();
+		keySet = oldJarProjectVOMap.keySet();
+		Iterator it = keySet.iterator();
+
+		List<String> mapRemove = new ArrayList<String>();
+
+		while (it.hasNext()) {
+			boolean isExit = false;
+			String beatIDByMap = it.next().toString();
+			for (JarProjectVO jarXMLVO : jarXMLList) {
+				String beatIDByXml = jarXMLVO.getBeatID();
+
+				if (beatIDByXml.equals(beatIDByMap)) {
+					isExit = true;
+				}
+			}
+
+			if (!isExit) {
+				mapRemove.add(beatIDByMap);
+			}
+		}
+
+		for (String removeKey : mapRemove) {
+			JarProjectVO jarProjectVO = oldJarProjectVOMap.get(removeKey);
+			if (jarProjectVO != null) {
+				Long pid = jarProjectVO.getPid();
+
+				if (pid != null) {
+					ProcessUtial.destoryProcess(pid);
+				}
+			}
+
+			oldJarProjectVOMap.remove(removeKey);
+		}
+
+		return oldJarProjectVOMap;
+	}
+
 	/*******************************************
 	 * 回傳可轉換成json的JarProjectVOList ps:用於查詢狀態
 	 *****************************************/
@@ -317,7 +412,8 @@ public class JarManagerAPIService {
 			forJsonJarVO.setJarFilePath(jarProjectVO.getJarFilePath());
 			forJsonJarVO.setNotFindCount(jarProjectVO.getNotFindCount());
 			forJsonJarVO.setTimeSeries(jarProjectVO.getTimeSeries());
-			forJsonJarVO.setRun(jarProjectVO.isRun());
+			forJsonJarVO.setNeedRun(jarProjectVO.isNeedRun());
+			forJsonJarVO.setPid(jarProjectVO.getPid());
 			jarProjectVOList.add(forJsonJarVO);
 		}
 
@@ -338,45 +434,10 @@ public class JarManagerAPIService {
 
 			HashMap<String, JarProjectVO> jarProjectVOMap = new HashMap<String, JarProjectVO>();
 
-			ProcessUtial processUtial = new ProcessUtial();
-
 			for (JarProjectVO jarProjectVO : jarProjectVOList) {
-				if (jarProjectVO.isRun()) {
-					Thread th = new Thread(new Runnable() {
-						@Override
-						public void run() {
-
-							String fileName = (jarProjectVO.getFileName() + ".jar");
-							String[] commandLinearr = jarProjectVO.getCommandLinearr();
-							String key = jarProjectVO.getBeatID();
-							Process process = null;
-							JarConsole jarConsole = null;
-
-							try {
-								ProcessBuilder processBuilder = new ProcessBuilder(commandLinearr);
-								process = processBuilder.start();
-
-								jarConsole = new JarConsole(process, fileName);
-
-								jarConsole.start();
-
-								logger.debug("process exec!");
-							} catch (IOException e) {
-								logger.debug("Error:" + e.getMessage());
-
-							}
-							Long pid = processUtial.getProcessID(process);
-
-							jarProjectVO.setPid(pid);
-							jarProjectVO.setJarConsole(jarConsole);
-							logger.debug("process.isAlive()! :" + process.isAlive());
-							jarProjectVOMap.put(key, jarProjectVO);
-
-						}
-
-					});
-					th.start();
-
+				boolean isrun = jarProjectVO.isNeedRun();
+				if (jarProjectVO.isNeedRun()) {
+					startJarVO(jarProjectVO, jarProjectVOMap);
 				}
 
 			}
@@ -393,6 +454,39 @@ public class JarManagerAPIService {
 
 	}
 
+	public static HashMap<String, JarProjectVO> startJarVO(JarProjectVO jarProjectVO,
+			HashMap<String, JarProjectVO> jarProjectVOMap) {
+		try {
+			ProcessUtial processUtial = new ProcessUtial();
+			String fileName = (jarProjectVO.getFileName() + ".jar");
+			String[] commandLinearr = jarProjectVO.getCommandLinearr();
+
+			ProcessBuilder processBuilder = new ProcessBuilder(commandLinearr);
+			Process newProcess;
+
+			newProcess = processBuilder.start();
+
+			Long newPid = processUtial.getProcessID(newProcess);
+
+			jarProjectVO.setPid(newPid);
+			jarProjectVO.setNotFindCount(0);
+			jarProjectVO.setLocalDateTime(null);
+			JarConsole jarConsole = new JarConsole(newProcess, fileName);
+			jarProjectVO.setJarConsole(jarConsole);
+
+			logger.debug("jarProjectVOgetLocalDateTime:" + jarProjectVO.getLocalDateTime());
+
+			String key = jarProjectVO.getBeatID();
+			jarConsole.start();
+			jarProjectVOMap.put(key, jarProjectVO);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return jarProjectVOMap;
+
+	}
+
 	/**
 	 * 現在有正在跑的process map
 	 * 
@@ -405,6 +499,20 @@ public class JarManagerAPIService {
 	 * 重新啟動 notFindCount次數>=5的JarProjectVO
 	 * 
 	 * notFindCount<5 notFindCount++
+	 * 
+	 * 
+	 * 1.傳入 須重啟的List
+	 * 
+	 * 2.傳入正在執行的map
+	 * 
+	 * 3.map濾除錯誤次數小於5的
+	 * 
+	 * 4.關閉有在map的list程序(錯誤次數小於5的除外)
+	 * 
+	 * 5.重啟需重啟的List
+	 * 
+	 * 
+	 * 
 	 */
 	public static HashMap<String, JarProjectVO> reStart(List<JarProjectVO> DeathList,
 			HashMap<String, JarProjectVO> jarProjectVOMap) throws IOException {
@@ -413,6 +521,7 @@ public class JarManagerAPIService {
 		for (JarProjectVO deathjarProjectVO : DeathList) {
 			JarProjectVO jarProjectVO = jarProjectVOMap.get(deathjarProjectVO.getBeatID());
 
+			// 如果說有在map 代表他正在執行 把她關閉 在開啟
 			if (jarProjectVO != null) {
 
 				Long pid = jarProjectVO.getPid();
@@ -428,25 +537,8 @@ public class JarManagerAPIService {
 
 					processUtial.destoryProcess(pid);
 
-					String fileName = (jarProjectVO.getFileName() + ".jar");
-					String[] commandLinearr = jarProjectVO.getCommandLinearr();
+					jarProjectVOMap = startJarVO(jarProjectVO, jarProjectVOMap);
 
-					ProcessBuilder processBuilder = new ProcessBuilder(commandLinearr);
-					Process newProcess = processBuilder.start();
-
-					Long newPid = processUtial.getProcessID(newProcess);
-
-					jarProjectVO.setPid(newPid);
-					jarProjectVO.setNotFindCount(0);
-					jarProjectVO.setLocalDateTime(null);
-					JarConsole jarConsole = new JarConsole(newProcess, fileName);
-					jarProjectVO.setJarConsole(jarConsole);
-
-					logger.debug("jarProjectVOgetLocalDateTime:" + jarProjectVO.getLocalDateTime());
-
-					String key = jarProjectVO.getBeatID();
-					jarProjectVOMap.put(key, jarProjectVO);
-					jarConsole.start();
 				} else {
 					logger.debug("notFindCount:" + notFindCount);
 
@@ -454,6 +546,10 @@ public class JarManagerAPIService {
 					notFindCount++;
 					jarProjectVO.setNotFindCount(notFindCount);
 				}
+
+				// 如果說有沒在map 開啟新的
+			} else {
+				jarProjectVOMap = startJarVO(deathjarProjectVO, jarProjectVOMap);
 
 			}
 		}
@@ -482,16 +578,14 @@ public class JarManagerAPIService {
 		return ConsumerMessage.getSoleHeartBeatClientVOList();
 	}
 
-
-	
 	/************************
 	 * 取得無發送訊息的JarProjectVO 並刪除jms Message
 	 * 
-	 *  邏輯:
+	 * 邏輯:
 	 * 
 	 * 1. jarProjectVOMap 傳入正在執行的Map
 	 * 
-	 * 2. 取到系統設定檔List 並移除不執行的(isRun)
+	 * 2. 取到系統設定檔List 並移除不執行的(isNeedRun)
 	 * 
 	 * 3. 再取到有發送心跳協議的
 	 * 
@@ -501,36 +595,36 @@ public class JarManagerAPIService {
 	 * 
 	 * 6. deathList 放入設定檔移除掉有心跳協議的且移除間隔時間未到達的
 	 * 
-	 * **********************/
+	 **********************/
 	public static List<JarProjectVO> getDeathList(HashMap<String, JarProjectVO> jarProjectVOMap) throws JMSException {
 
 		ConsumerMessage messageConsumer = new ConsumerMessage();
 
 		RabbitFactory rabbitFactory = new RabbitFactory(xmlFile);
 
-
 		// 先取到系統設定檔List
 		List<JarProjectVO> jarVOConfigList = rabbitFactory.CreateProjectVOList();
-		
-		jarVOConfigList.removeIf((JarProjectVO jarProjectVO) -> jarProjectVO.isRun());
+
+		jarVOConfigList.removeIf((JarProjectVO jarProjectVO) -> !jarProjectVO.isNeedRun());
 
 		// 再取到jms
 		List<HeartBeatClientVO> heartBeatClientVOList = messageConsumer.getHeartBeatClientVOListFromHeart();
 
 		List<JarProjectVO> deathList = new ArrayList<JarProjectVO>();
 
-		//比對正在執行的跟設定檔 如果設定檔無 就放入deathList
+		// 比對正在執行的跟設定檔 如果設定檔無 就放入deathList
 		for (JarProjectVO jarVOConfig : jarVOConfigList) {
 			JarProjectVO jAliveVO = jarProjectVOMap.get(jarVOConfig.getBeatID());
 
-			// 先比對jarProjectVOList跟正在執行的map 的beathId 如果沒有在map 裡面 代表他掛了 放入 DeathList
+			// 先比對jarProjectVOList跟正在執行的map 的beathId 如果沒有在map 裡面 代表他掛了 放入
+			// DeathList
 			if (null == jAliveVO) {
 				deathList.add(jarVOConfig);
 			} else {
 				// 存取比對時間 jarProjectVO.set(map.time)
 				jarVOConfig.setLocalDateTime(jAliveVO.getLocalDateTime());
 
-				//第一次執行的放入時間
+				// 第一次執行的放入時間
 				if (null == jAliveVO.getLocalDateTime()) {
 					jAliveVO.setLocalDateTime(LocalDateTime.now());
 				}
@@ -550,7 +644,6 @@ public class JarManagerAPIService {
 
 			jarVOConfigList.removeIf((JarProjectVO jarProjectVO) -> jarProjectVO.getBeatID().equals(hearBeatID));
 		}
-
 
 		// 移除掉 時間間隔<設定檔時間 or 時間間隔 = null (還沒檢查過)
 		for (JarProjectVO jarVO : jarVOConfigList) {
@@ -614,8 +707,16 @@ public class JarManagerAPIService {
 	 **/
 	public static void main(String[] args) throws ClassNotFoundException, JMSException {
 
-		// // xmlFile = "D:\\jarTest\\JarManagerAPI.xml";
-		// xmlFile = "D:\\XMLFilePath\\JarManagerAPI.xml";
+		//// xmlFile = "D:\\JarManagerAPI.xml";
+		////
+		//// ConsumerMessage aaa= new ConsumerMessage();
+		//// List<HeartBeatClientVO> aaaa=aaa.getSoleHeartBeatClientVOList();
+		////
+		//// System.out.println("請輸入執行參數");
+		//
+		// xmlFile = "D:\\JarManagerAPI.xml";
+		// // xmlFile = "D:\\XMLFilePath\\JarManagerAPI.xml";
+		//
 		//
 		// startManager();
 
@@ -628,8 +729,8 @@ public class JarManagerAPIService {
 				break;
 			default:
 				System.out.println(
-						"請輸入正確格式: -java -jar yourJarFilePath\\JarManagerAPI.jar yourXMLFilePath\\JarManagerAPI.xml -yourAction");
-				System.out.println("指令說明: -java -jar yourJarFilePath\\JarManagerAPI.jar -all ");
+						"請輸入正確格式: java -jar yourJarFilePath\\JarManagerAPI.jar yourXMLFilePath\\JarManagerAPI.xml -yourAction");
+				System.out.println("指令說明: java -jar yourJarFilePath\\JarManagerAPI.jar -all ");
 				break;
 			}
 
@@ -650,8 +751,8 @@ public class JarManagerAPIService {
 				break;
 			default:
 				System.out.println(
-						"請輸入正確格式: -java -jar yourJarFilePath\\JarManagerAPI.jar yourXMLFilePath\\JarManagerAPI.xml -action");
-				System.out.println("指令說明: -java -jar yourJarFilePath\\JarManagerAPI.jar -all ");
+						"請輸入正確格式: java -jar yourJarFilePath\\JarManagerAPI.jar yourXMLFilePath\\JarManagerAPI.xml -action");
+				System.out.println("指令說明: java -jar yourJarFilePath\\JarManagerAPI.jar -all ");
 				break;
 			}
 

@@ -11,6 +11,7 @@ import com.rabbitmq.jms.admin.RMQConnectionFactory;
 import com.rabbitmq.jms.admin.RMQDestination;
 
 import tw.com.jarmanager.api.vo.HeartBeatConnectionFactoryVO;
+import tw.com.jarmanager.api.vo.HeartBeatDestinationVO;
 import tw.com.jarmanager.api.vo.JarManagerAPIXMLVO;
 import tw.com.jarmanager.api.vo.JarProjectVO;
 import tw.com.jarmanager.api.vo.ManagerVO;
@@ -30,7 +31,23 @@ public class RabbitFactory {
 
 			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 			JarManagerAPIXMLVO jarManagerAPIXMLVO = (JarManagerAPIXMLVO) jaxbUnmarshaller.unmarshal(file);
-			return jarManagerAPIXMLVO.getHeartBeatDestinationVO();
+			
+			System.out.println(jarManagerAPIXMLVO.getHeartBeatDestinationVO().getDestinationName());
+			
+			HeartBeatDestinationVO heartBeatDestinationVO = jarManagerAPIXMLVO.getHeartBeatDestinationVO();
+
+			
+			RMQDestination rMQDestination = new RMQDestination();
+
+			rMQDestination.setDestinationName(heartBeatDestinationVO.getDestinationName());
+			rMQDestination.setAmqp(heartBeatDestinationVO.isAmqp());
+			rMQDestination.setAmqpExchangeName(heartBeatDestinationVO.getAmqpExchangeName());
+			rMQDestination.setAmqpQueueName(heartBeatDestinationVO.getAmqpQueueName());
+			rMQDestination.setAmqpRoutingKey(heartBeatDestinationVO.getAmqpRoutingKey());
+			
+			
+			
+			return rMQDestination;
 
 		} catch (JAXBException e) {
 			e.printStackTrace();
@@ -46,13 +63,14 @@ public class RabbitFactory {
 
 			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 			JarManagerAPIXMLVO jarManagerAPIXMLVO = (JarManagerAPIXMLVO) jaxbUnmarshaller.unmarshal(file);
-			
-			
-			HeartBeatConnectionFactoryVO heartBeatConnectionFactoryVO=jarManagerAPIXMLVO.getHeartBeatConnectionFactoryVO();
-			
-			
+
+			HeartBeatConnectionFactoryVO heartBeatConnectionFactoryVO = jarManagerAPIXMLVO
+					.getHeartBeatConnectionFactoryVO();
+
 			RMQConnectionFactory rMQConnectionFactory = new RMQConnectionFactory();
-			rMQConnectionFactory.setPassword(heartBeatConnectionFactoryVO.getPassword());
+			String password = heartBeatConnectionFactoryVO.getPassword();
+			rMQConnectionFactory.setPassword(password);
+
 			rMQConnectionFactory.setHost(heartBeatConnectionFactoryVO.getHost());
 			rMQConnectionFactory.setUsername(heartBeatConnectionFactoryVO.getUsername());
 			rMQConnectionFactory.setVirtualHost(heartBeatConnectionFactoryVO.getVirtualHost());

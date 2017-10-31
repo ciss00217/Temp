@@ -2,21 +2,27 @@ package tw.com.jarmanager.api.vo;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import com.rabbitmq.jms.admin.RMQDestination;
 
 @XmlRootElement(name = "heartBeatDestination")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlType(propOrder = { "destinationName", "amqp", "amqpQueueName", "amqpExchangeName", "amqpRoutingKey" })
-public class HeartBeatDestinationVO extends RMQDestination {
+public class HeartBeatDestinationVO{
 
 	private static final long serialVersionUID = 1L;
+	@XmlElement(name="destinationName")
 	private String destinationName;
+	@XmlElement(name="amqp")
 	private boolean amqp;
+	@XmlElement(name="amqpQueueName")
 	private String amqpQueueName;
+	@XmlElement(name="amqpExchangeName")
 	private String amqpExchangeName;
+	@XmlElement(name="amqpRoutingKey")
 	private String amqpRoutingKey;
 
 	public String getDestinationName() {

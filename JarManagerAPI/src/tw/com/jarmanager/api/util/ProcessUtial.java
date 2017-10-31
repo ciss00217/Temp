@@ -64,7 +64,7 @@ public class ProcessUtial {
 		return null;
 	}
 
-	public void destoryProcess(Long pid) throws IOException {
+	public static void destoryProcess(Long pid) throws IOException {
 
 		if (pid != null) {
 			Platform platform = Platform.detect();

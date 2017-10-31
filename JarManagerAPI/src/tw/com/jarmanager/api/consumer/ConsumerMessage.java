@@ -32,24 +32,35 @@ public class ConsumerMessage {
 	protected Destination destination;
 	private Session session;
 
-	public ConsumerMessage() throws JMSException {
-		try {
+	public ConsumerMessage()  {
+	
 			RabbitFactory rabbitFactory = new RabbitFactory(JarManagerAPIService.xmlFile);
 
 			this.destination = rabbitFactory.CreateRabbitDestination();
 
 			ConnectionFactory connectionFactory = rabbitFactory.CreateRabbitConnectionFactory();
 
-			this.connection = connectionFactory.createConnection();
+			try {
+				this.connection = connectionFactory.createConnection();
+			} catch (JMSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-			connection.start();
+			try {
+				connection.start();
+			} catch (JMSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-			this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+			try {
+				this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+			} catch (JMSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-		} catch (JMSException e) {
-
-			logger.debug("ERROR:" + e.getMessage());
-		}
 	}
 
 	public List<String> getMessage() throws JMSException {

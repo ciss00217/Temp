@@ -11,7 +11,10 @@ import java.util.concurrent.Executors;
 
 import com.google.gson.Gson;
 
+import tw.com.jarmanager.api.factory.RabbitFactory;
+import tw.com.jarmanager.api.service.JarManagerAPIService;
 import tw.com.jarmanager.api.vo.JarProjectVO;
+import tw.com.jarmanager.api.vo.RequestVO;
 
 public class SocketServer extends Thread {
 	private int port;
@@ -21,16 +24,13 @@ public class SocketServer extends Thread {
 		this.port = port;
 	}
 
-	
 	public List<JarProjectVO> getJarProjectVOList() {
 		return jarProjectVOList;
 	}
 
-
 	public void setJarProjectVOList(List<JarProjectVO> jarProjectVOList) {
 		this.jarProjectVOList = jarProjectVOList;
 	}
-
 
 	@Override
 	public void run() {
@@ -56,8 +56,7 @@ public class SocketServer extends Thread {
 					e.printStackTrace();
 				}
 		}
-	
-		
+
 	}
 
 	public void listenRequest() {
@@ -90,9 +89,9 @@ public class SocketServer extends Thread {
 	public static void main(String[] args) {
 		SocketServer server = new SocketServer(9527);
 		server.start();
-//		ManagerVO managerVO = new ManagerVO();
-//		managerVO.setFolderPath("test");
-//		server.setManagerVO(managerVO);
+		// ManagerVO managerVO = new ManagerVO();
+		// managerVO.setFolderPath("test");
+		// server.setManagerVO(managerVO);
 	}
 
 	/**
@@ -123,22 +122,44 @@ public class SocketServer extends Thread {
 				output = new DataOutputStream(this.clientSocket.getOutputStream());
 				Gson gson = new Gson();
 				while (true) {
-					String action = input.readUTF();
-					System.out.println("action:" + action);
-					if ("getJarProjectVOList".equals(action)) {
-						List<JarProjectVO> jarProjectVOList  = getJarProjectVOList();
-						if(jarProjectVOList!=null){
-							String json = gson.toJson(jarProjectVOList);
-							System.out.println("jarProjectVOList.json :" + json);
-							output.writeUTF(json);
-						}else{
-							System.out.println("jarProjectVOList is null");
-						}
-			
-					}
+					String socketRequestStr = input.readUTF();
 
-					output.flush();
-					break;
+					System.out.println("socketRequestStr:" + socketRequestStr);
+
+					if (socketRequestStr != null && socketRequestStr.length() > 0) {
+
+						RequestVO responseVO = gson.fromJson(socketRequestStr, RequestVO.class);
+						String action = responseVO.getAction();
+						if ("getJarProjectVOList".equals(action)) {
+
+							// 正在執行的
+							List<JarProjectVO> jarProjectVOList = getJarProjectVOList();
+							// 關閉的
+							List<JarProjectVO> noOpen = JarManagerAPIService
+									.getXMLJarProjectVOList(JarManagerAPIService.xmlFile);
+
+							for (JarProjectVO item : jarProjectVOList) {
+								noOpen.removeIf((JarProjectVO jarProjectVO) -> jarProjectVO.getBeatID()
+										.equals(item.getBeatID()));
+							}
+
+							jarProjectVOList.addAll(noOpen);
+
+							if (jarProjectVOList != null) {
+								String json = gson.toJson(jarProjectVOList);
+								System.out.println("jarProjectVOList.json :" + json);
+								output.writeUTF(json);
+							} else {
+								System.out.println("jarProjectVOList is null");
+							}
+
+						} else if ("removeJarVOByIds".equals(action)) {
+
+						}
+
+						output.flush();
+						break;
+					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -156,6 +177,5 @@ public class SocketServer extends Thread {
 			}
 		}
 	}
-
 
 }
