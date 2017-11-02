@@ -5,7 +5,7 @@
 			<PatternLayout pattern="{yyyy-MM-dd HH:mm:ss}  [%t] %-5p %c:%L %x - %m%n" charset="UTF-8" />
 		</Console>
 		<File name="jarmanagerAPILog" append="true"
-			fileName="D:/data/log/JarmanagerAPI/JarmanagerAPI.log">
+			fileName="data/log/JarmanagerAPI/JarmanagerAPI.log">
 			<PatternLayout>
 				<Pattern>%d %p %c [%t] %m%n</Pattern>
 				<charset>UTF-8</charset>
