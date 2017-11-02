@@ -8,10 +8,10 @@ import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.*;
 
 import com.google.gson.Gson;
 
-import tw.com.jarmanager.api.factory.RabbitFactory;
 import tw.com.jarmanager.api.service.JarManagerAPIService;
 import tw.com.jarmanager.api.vo.JarProjectVO;
 import tw.com.jarmanager.api.vo.RequestVO;
@@ -19,9 +19,29 @@ import tw.com.jarmanager.api.vo.RequestVO;
 public class SocketServer extends Thread {
 	private int port;
 	private List<JarProjectVO> jarProjectVOList;
+	private HashSet<String> changeIdSet;
+	private boolean isApiXMLChange;
+
+	
+	public HashSet<String> getChangeIdSet() {
+		return changeIdSet;
+	}
+
+	public void setChangeIdSet(HashSet<String> changeIdSet) {
+		this.changeIdSet = changeIdSet;
+	}
+
+	public boolean isApiXMLChange() {
+		return isApiXMLChange;
+	}
+
+	public void setApiXMLChange(boolean isApiXMLChange) {
+		this.isApiXMLChange = isApiXMLChange;
+	}
 
 	public SocketServer(int port) {
 		this.port = port;
+		this.changeIdSet=new HashSet<String>();
 	}
 
 	public List<JarProjectVO> getJarProjectVOList() {
@@ -153,7 +173,16 @@ public class SocketServer extends Thread {
 								System.out.println("jarProjectVOList is null");
 							}
 
-						} else if ("removeJarVOByIds".equals(action)) {
+						} else if ("sendChangeBeatID".equals(action)) {
+							List<String> ids=responseVO.getIds();
+							
+							for(String str:ids){
+								changeIdSet.add(str);
+							}
+							setApiXMLChange(true);
+							
+					
+							output.writeUTF("Success");
 
 						}
 

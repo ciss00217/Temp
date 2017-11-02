@@ -52,8 +52,8 @@ public class CreateJarManagerAPIXmlTest {
 		jarProjectVO.setNeedRun(true);
 
 		ArrayList<String> arrayList = new ArrayList<String>();
-		arrayList.add("D:\\XMLFilePath\\SFStatus.xml");
-		arrayList.add("D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
+		arrayList.add("D:\\jarXml\\SFStatus.xml");
+		arrayList.add("D:\\jarXml\\HeatBeatClinetBeans.xml");
 
 		jarProjectVO.setFilePathXMLList(arrayList);
 
@@ -68,8 +68,8 @@ public class CreateJarManagerAPIXmlTest {
 		jarProjectVO1.setNeedRun(true);
 
 		ArrayList<String> arrayList1 = new ArrayList<String>();
-		arrayList1.add("D:\\XMLFilePath\\SFOutboundDetail.xml");
-		arrayList1.add("D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
+		arrayList1.add("D:\\jarXml\\SFOutboundDetail.xml");
+		arrayList1.add("D:\\jarXml\\HeatBeatClinetBeans.xml");
 		jarProjectVO1.setFilePathXMLList(arrayList1);
 
 		jarProjectVOList.add(jarProjectVO1);
@@ -83,8 +83,8 @@ public class CreateJarManagerAPIXmlTest {
 		jarProjectVO2.setNeedRun(true);
 
 		ArrayList<String> arrayList2 = new ArrayList<String>();
-		arrayList2.add("D:\\XMLFilePath\\SFBalance.xml");
-		arrayList2.add("D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
+		arrayList2.add("D:\\jarXml\\SFBalance.xml");
+		arrayList2.add("D:\\jarXml\\HeatBeatClinetBeans.xml");
 
 		jarProjectVO2.setFilePathXMLList(arrayList2);
 
@@ -99,9 +99,9 @@ public class CreateJarManagerAPIXmlTest {
 		jarProjectVO3.setNeedRun(true);
 
 		ArrayList<String> arrayList3 = new ArrayList<String>();
-		arrayList3.add("D:\\XMLFilePath\\q2w-config.xml");
-		arrayList3.add("D:\\XMLFilePath\\xmlconverter-config.xml");
-		arrayList3.add("D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
+		arrayList3.add("D:\\jarXml\\q2w-config.xml");
+		arrayList3.add("D:\\jarXml\\xmlconverter-config.xml");
+		arrayList3.add("D:\\jarXml\\HeatBeatClinetBeans.xml");
 
 		jarProjectVO3.setFilePathXMLList(arrayList3);
 

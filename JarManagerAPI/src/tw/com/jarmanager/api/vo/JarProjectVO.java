@@ -33,6 +33,8 @@ import tw.com.jarmanager.api.service.JarConsole;
  * 
  * needRun		:jar是否執行
  * 
+ * firstScuessRun : 是否有成功執行過
+ * 
  * notFindCount : jar的未執行次數
  * 
  * getCommandLinearr: jar的CommandLine
@@ -41,7 +43,7 @@ import tw.com.jarmanager.api.service.JarConsole;
 
 @XmlRootElement(name = "jarProjectVO")
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder = { "fileName", "beatID", "jarFilePath", "description","needRun","timeSeries", "filePathXMLList" })
+@XmlType(propOrder = { "fileName", "beatID", "jarFilePath", "description","needRun","timeSeries", "filePathXMLList" ,"firstSuccessRun"})
 public class JarProjectVO {
 	@XmlAttribute
 	private String id;
@@ -60,7 +62,20 @@ public class JarProjectVO {
 	@XmlElementWrapper(name = "filePathXMLList")
 	@XmlElement(name = "item")
 	private List<String> filePathXMLList;
+	@XmlElement
+	private boolean firstSuccessRun;
+	
+	public boolean getFirstSuccessRun() {
+		return firstSuccessRun;
+	}
+	
+	public boolean isFirstSuccessRun() {
+		return firstSuccessRun;
+	}
 
+	public void setFirstSuccessRun(boolean firstSuccessRun) {
+		this.firstSuccessRun = firstSuccessRun;
+	}
 
 	public boolean isNeedRun() {
 		return needRun;

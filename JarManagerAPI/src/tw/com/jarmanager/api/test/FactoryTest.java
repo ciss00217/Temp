@@ -5,6 +5,7 @@ import java.util.List;
 
 import tw.com.jarmanager.api.factory.RabbitFactory;
 import tw.com.jarmanager.api.service.JarManagerAPIService;
+import tw.com.jarmanager.api.vo.JarManagerAPIXMLVO;
 import tw.com.jarmanager.api.vo.JarProjectVO;
 
 public class FactoryTest {
@@ -35,7 +36,14 @@ public class FactoryTest {
 		
 		
 		
-		jarManagerAPIService.updateJarProjectVOXml(jarProjectVO1);
+		boolean isok=jarManagerAPIService.updateJarProjectVOXml(jarProjectVO1);
+		
+		System.out.println(isok);
+	}
+	
+	void changeObject(JarProjectVO AAA){
+		AAA.setBeatID("ASDASA");
+		AAA.setFileName("LOJJ");
 	}
 
 }

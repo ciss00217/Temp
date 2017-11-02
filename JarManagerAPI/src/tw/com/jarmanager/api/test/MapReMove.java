@@ -39,34 +39,34 @@ public class MapReMove {
 		
 
 			
-		HashMap<String, JarProjectVO> oldJarProjectVOMap = new HashMap<String, JarProjectVO>();
-		
-		JarProjectVO JarProjectVO1 = new JarProjectVO();
-		JarProjectVO1.setBeatID("aaaa");
-		
-		JarProjectVO JarProjectVO2 = new JarProjectVO();
-		JarProjectVO2.setBeatID("aaaa1");
-		
-		JarProjectVO JarProjectVO3 = new JarProjectVO();
-		JarProjectVO3.setBeatID("SFStatus");
-		
-		JarProjectVO JarProjectVO4 = new JarProjectVO();
-		JarProjectVO4.setBeatID("SFBalance");
-		
-		String key1=JarProjectVO1.getBeatID();
-		String key2=JarProjectVO2.getBeatID();
-		String key3=JarProjectVO3.getBeatID();
-		String key4=JarProjectVO4.getBeatID();
-		
-		oldJarProjectVOMap.put(key1, JarProjectVO1);
-		oldJarProjectVOMap.put(key2, JarProjectVO2);
-		oldJarProjectVOMap.put(key3, JarProjectVO3);
-		oldJarProjectVOMap.put(key4, JarProjectVO4);
-		
-		
-		oldJarProjectVOMap=jarManagerAPIService.mapRemoveNoExitByXml(oldJarProjectVOMap);
-		
-		System.out.println("test");
+//		HashMap<String, JarProjectVO> oldJarProjectVOMap = new HashMap<String, JarProjectVO>();
+//		
+//		JarProjectVO JarProjectVO1 = new JarProjectVO();
+//		JarProjectVO1.setBeatID("aaaa");
+//		
+//		JarProjectVO JarProjectVO2 = new JarProjectVO();
+//		JarProjectVO2.setBeatID("aaaa1");
+//		
+//		JarProjectVO JarProjectVO3 = new JarProjectVO();
+//		JarProjectVO3.setBeatID("SFStatus");
+//		
+//		JarProjectVO JarProjectVO4 = new JarProjectVO();
+//		JarProjectVO4.setBeatID("SFBalance");
+//		
+//		String key1=JarProjectVO1.getBeatID();
+//		String key2=JarProjectVO2.getBeatID();
+//		String key3=JarProjectVO3.getBeatID();
+//		String key4=JarProjectVO4.getBeatID();
+//		
+//		oldJarProjectVOMap.put(key1, JarProjectVO1);
+//		oldJarProjectVOMap.put(key2, JarProjectVO2);
+//		oldJarProjectVOMap.put(key3, JarProjectVO3);
+//		oldJarProjectVOMap.put(key4, JarProjectVO4);
+//		
+//		
+//		oldJarProjectVOMap=jarManagerAPIService.mapRemoveNoExitByXml(oldJarProjectVOMap);
+//		
+//		System.out.println("test");
 
 	}
 
