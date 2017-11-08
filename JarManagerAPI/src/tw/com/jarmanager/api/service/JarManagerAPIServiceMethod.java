@@ -247,6 +247,11 @@ public class JarManagerAPIServiceMethod {
 			}
 
 		}
+		
+		for (String id : aliveJarIDs) {
+			deathList.removeIf((JarProjectVO jarProjectVO) -> jarProjectVO.getBeatID().equals(id));
+		}
+		aliveJarIDs = new ArrayList<String>();
 
 		for (JarProjectVO deathJarVO : deathList) {
 			JarProjectVO jarMapVO = jarProjectVOMap.get(deathJarVO.getBeatID());
@@ -377,8 +382,9 @@ public class JarManagerAPIServiceMethod {
 				logger.debug("destroy.....");
 
 				processUtial.destoryProcess(pid);
-
 				
+				jarProjectVOMap.remove(reStartVO.getBeatID());
+
 			}
 			if (reStartVO != null) {
 				jarProjectVOMap = startJarVO(reStartVO, jarProjectVOMap);

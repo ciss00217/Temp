@@ -70,17 +70,52 @@ public class JarManagerAPIService {
 	public static void setXmlFilePath(String xmlFile) {
 		JarManagerAPIService.xmlFile = xmlFile;
 	}
+	
+	public static boolean chackData(JarProjectVO jarProjectVO) {
+
+		String beatID = jarProjectVO.getBeatID();
+
+		String fileName = jarProjectVO.getFileName();
+
+		String jarFilePath = jarProjectVO.getJarFilePath();
+
+		Long timeSeries = jarProjectVO.getTimeSeries();
+		if (null == fileName || "".equals(fileName.trim())) {
+			return false;
+		}
+
+		if (null == jarFilePath || "".equals(jarFilePath.trim())) {
+			return false;
+		}
+
+		if (null == timeSeries || timeSeries < 30000) {
+			return false;
+		}
+
+		if (null == beatID || "".equals(beatID.trim())) {
+			return false;
+		}
+
+		return true;
+
+	}
 
 	public static boolean addJarProjectVOXml(JarProjectVO jarProjectVO) {
 
+		boolean isSucess = chackData(jarProjectVO);
+
+		if (!isSucess) {
+			return isSucess;
+		}
+
 		try {
 			List<JarProjectVO> xmlJarVOList = getXMLJarProjectVOList(xmlFile);
-			
-			for(JarProjectVO xmlJarVO:xmlJarVOList){
-				String xmlBeatIDId=xmlJarVO.getBeatID();
-				String addVOBeatIDId=jarProjectVO.getBeatID();
-				
-				if(xmlBeatIDId.equals(addVOBeatIDId)){
+
+			for (JarProjectVO xmlJarVO : xmlJarVOList) {
+				String xmlBeatIDId = xmlJarVO.getBeatID();
+				String addVOBeatIDId = jarProjectVO.getBeatID();
+
+				if (xmlBeatIDId.equals(addVOBeatIDId)) {
 					return false;
 				}
 			}
@@ -89,7 +124,7 @@ public class JarManagerAPIService {
 
 			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
 
-			boolean isSucess = socketClient.sendChangeBeatID(jarProjectVO);
+			isSucess = socketClient.sendChangeBeatID(jarProjectVO);
 
 			List<JarProjectVO> jarProjectVOList = socketClient.getJarProjectVOList();
 
@@ -119,6 +154,59 @@ public class JarManagerAPIService {
 		}
 
 		return true;
+	}
+	
+	
+	public static JarManagerAPIXMLVO getJarManagerAPIXMLVO() {
+
+		try {
+
+			File file = new File(xmlFile);
+			JAXBContext jaxbContext;
+
+			jaxbContext = JAXBContext.newInstance(JarManagerAPIXMLVO.class);
+
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+			JarManagerAPIXMLVO jarManagerAPIXMLVO = (JarManagerAPIXMLVO) jaxbUnmarshaller.unmarshal(file);
+			return jarManagerAPIXMLVO;
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	public static boolean jarManagerSetUp(JarManagerAPIXMLVO jarManagerSetUp) {
+
+		try {
+
+			File file = new File(xmlFile);
+			JAXBContext jaxbContext;
+
+			jaxbContext = JAXBContext.newInstance(JarManagerAPIXMLVO.class);
+
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+			JarManagerAPIXMLVO jarManagerAPIXMLVO = (JarManagerAPIXMLVO) jaxbUnmarshaller.unmarshal(file);
+
+			jarManagerAPIXMLVO.setHeartBeatConnectionFactoryVO(jarManagerSetUp.getHeartBeatConnectionFactoryVO());
+			jarManagerAPIXMLVO.setHeartBeatDestinationVO(jarManagerSetUp.getHeartBeatDestinationVO());
+			jarManagerAPIXMLVO.setManagerVO(jarManagerSetUp.getManagerVO());
+
+			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+			// output pretty printed
+			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+			jaxbMarshaller.marshal(jarManagerAPIXMLVO, file);
+			jaxbMarshaller.marshal(jarManagerAPIXMLVO, System.out);
+
+			return true;
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 //	public static boolean updateJarProjectVOXml(JarProjectVO jarProjectVO, String befBeatID) {
@@ -189,14 +277,19 @@ public class JarManagerAPIService {
 
 	public static boolean updateJarProjectVOXml(JarProjectVO jarProjectVO) {
 
+		boolean isSucess = chackData(jarProjectVO);
+
+		if (!isSucess) {
+			return isSucess;
+		}
+
 		try {
 			logger.debug("updateJarProjectVOXml");
 
 			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
 
-			boolean isSucess = socketClient.sendChangeBeatID(jarProjectVO);
+			isSucess = socketClient.sendChangeBeatID(jarProjectVO);
 
-			
 			File file = new File(xmlFile);
 			JAXBContext jaxbContext = JAXBContext.newInstance(JarManagerAPIXMLVO.class);
 
@@ -242,10 +335,6 @@ public class JarManagerAPIService {
 			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
 
 			boolean isSucess = socketClient.sendChangeBeatID(jarIDList);
-
-//			if (!isSucess) {
-//				return false;
-//			}
 			
 			logger.debug("addJarProjectVOXml:addJarProjectVOXml");
 

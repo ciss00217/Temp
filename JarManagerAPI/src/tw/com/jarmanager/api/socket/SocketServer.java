@@ -167,7 +167,7 @@ public class SocketServer extends Thread {
 
 							if (jarProjectVOList != null) {
 								String json = gson.toJson(jarProjectVOList);
-								System.out.println("jarProjectVOList.json :" + json);
+								//System.out.println("jarProjectVOList.json :" + json);
 								output.writeUTF(json);
 							} else {
 								System.out.println("jarProjectVOList is null");

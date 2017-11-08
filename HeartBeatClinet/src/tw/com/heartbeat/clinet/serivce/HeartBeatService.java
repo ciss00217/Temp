@@ -42,95 +42,90 @@ public class HeartBeatService {
 
 	public void beat() {
 
-		Thread th = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				String beatID = heartBeatClientVO.getBeatID();
+		String beatID = heartBeatClientVO.getBeatID();
 
-				heartBeatClientVO.setLocalDateTime(LocalDateTime.now());
+		heartBeatClientVO.setLocalDateTime(LocalDateTime.now());
 
-				String beatString = gson.toJson(heartBeatClientVO);
-				try {
-					if (consumerMessage.checkMessage(beatID)) {
-						logger.debug("send: beatID:" + beatID);
+		String beatString = gson.toJson(heartBeatClientVO);
+		try {
+			if (consumerMessage.checkMessage(beatID)) {
+				logger.debug("send: beatID:" + beatID);
 
-						producerMessage.send(beatString);
-					} else {
-						logger.debug("beatID: " + beatID + " exist");
-					}
-				} catch (Exception e) {
-					logger.debug("Error: " + e.getMessage());
-				}
+				producerMessage.send(beatString);
+			} else {
+				logger.debug("beatID: " + beatID + " exist");
 			}
-		});
-		th.start();
+		} catch (Exception e) {
+			logger.debug("Error: " + e.getMessage());
+		}
+
 	}
 
-	public static void startBeat() {
-
-		Thread th = new Thread(new Runnable() {
-			@Override
-			public void run() {
-
-				HeartBeatClientVO heartBeatClientVO = new HeartBeatClientVO();
-
-				XMLParser XMLParser = new XMLParser();
-
-				String beatID = XMLParser.getXMLText("heartBeatClientVO", "beatID", xmlFilePath);
-				String fileName = XMLParser.getXMLText("heartBeatClientVO", "fileName", xmlFilePath);
-				String timeSeriesStr = XMLParser.getXMLText("heartBeatClientVO", "timeSeries",
-						"src\\HeatBeatClinetBeans.xml");
-
-				Long timeSeries = null;
-
-				if (timeSeriesStr == null) {
-					timeSeries = null;
-				} else {
-					timeSeries = Long.parseLong(timeSeriesStr);
-				}
-
-				heartBeatClientVO.setBeatID(beatID);
-				heartBeatClientVO.setFileName(fileName);
-				heartBeatClientVO.setTimeSeries(timeSeries);
-				heartBeatClientVO.setLocalDateTime(LocalDateTime.now());
-
-			
-					ProducerMessage producerMessage = creartProducerMessage(xmlFilePath);
-
-					ConsumerMessage consumerMessage = creartConsumerMessage(xmlFilePath);
-
-					Gson gson = new Gson();
-
-					String beatString = gson.toJson(heartBeatClientVO);
-
-					while (true) {
-						beatID = heartBeatClientVO.getBeatID();
-
-						try {
-							if (consumerMessage.checkMessage(beatID)) {
-
-								producerMessage.send(beatString);
-							}
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						logger.debug("sleep: " + heartBeatClientVO.getTimeSeries());
-						try {
-							Thread.sleep(heartBeatClientVO.getTimeSeries());
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-
-				
-
-			}
-		});
-		th.start();
-
-	}
+//	public static void startBeat() {
+//
+//		Thread th = new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//
+//				HeartBeatClientVO heartBeatClientVO = new HeartBeatClientVO();
+//
+//				XMLParser XMLParser = new XMLParser();
+//
+//				String beatID = XMLParser.getXMLText("heartBeatClientVO", "beatID", xmlFilePath);
+//				String fileName = XMLParser.getXMLText("heartBeatClientVO", "fileName", xmlFilePath);
+//				String timeSeriesStr = XMLParser.getXMLText("heartBeatClientVO", "timeSeries",
+//						"src\\HeatBeatClinetBeans.xml");
+//
+//				Long timeSeries = null;
+//
+//				if (timeSeriesStr == null) {
+//					timeSeries = null;
+//				} else {
+//					timeSeries = Long.parseLong(timeSeriesStr);
+//				}
+//
+//				heartBeatClientVO.setBeatID(beatID);
+//				heartBeatClientVO.setFileName(fileName);
+//				heartBeatClientVO.setTimeSeries(timeSeries);
+//				heartBeatClientVO.setLocalDateTime(LocalDateTime.now());
+//
+//			
+//					ProducerMessage producerMessage = creartProducerMessage(xmlFilePath);
+//
+//					ConsumerMessage consumerMessage = creartConsumerMessage(xmlFilePath);
+//
+//					Gson gson = new Gson();
+//
+//					String beatString = gson.toJson(heartBeatClientVO);
+//
+//					while (true) {
+//						beatID = heartBeatClientVO.getBeatID();
+//
+//						try {
+//							if (consumerMessage.checkMessage(beatID)) {
+//
+//								producerMessage.send(beatString);
+//							}
+//						} catch (Exception e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//						logger.debug("sleep: " + heartBeatClientVO.getTimeSeries());
+//						try {
+//							Thread.sleep(heartBeatClientVO.getTimeSeries());
+//						} catch (InterruptedException e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//					}
+//
+//				
+//
+//			}
+//		});
+//		th.start();
+//
+//	}
 
 	public static ConsumerMessage creartConsumerMessage(String xmlFilePath) {
 		ConsumerMessage consumerMessage = null;
@@ -167,13 +162,22 @@ public class HeartBeatService {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		HeartBeatService HeartBeatService = new HeartBeatService("D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
-		HeartBeatService.startBeat();
+		while (true) {
+		HeartBeatClientVO heartBeatClientVO = new HeartBeatClientVO();
+
+		heartBeatClientVO.setBeatID("Q2W1");
+		heartBeatClientVO.setFileName("Q2W1");
+		heartBeatClientVO.setLocalDateTime(LocalDateTime.now());
+		heartBeatClientVO.setTimeSeries(10000);
+
+		HeartBeatService heartBeatService = new HeartBeatService("D:\\jarManager\\jarXml\\Q2W1-HeatBeatClinetBeans.xml");
+		heartBeatService.setHeartBeatClientVO(heartBeatClientVO);
 		
-//		RabbitFactory RabbitFactory = new RabbitFactory("D:\\XMLFilePath\\HeatBeatClinetBeans.xml");
-//		RMQConnectionFactory asdasda=RabbitFactory.CreateRabbitConnectionFactory(); 
-//		
-//		asdasda.set
+		heartBeatService.beat();
+		
+		Thread.sleep(10000);
+		}
+		
 	}
 
 }

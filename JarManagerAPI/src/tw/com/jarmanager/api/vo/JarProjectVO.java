@@ -43,7 +43,7 @@ import tw.com.jarmanager.api.service.JarConsole;
 
 @XmlRootElement(name = "jarProjectVO")
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder = { "fileName", "beatID", "jarFilePath", "description","needRun","timeSeries", "filePathXMLList" ,"firstSuccessRun"})
+@XmlType(propOrder = { "fileName", "beatID", "jarFilePath", "description","needRun","timeSeries", "filePathXMLList"})
 public class JarProjectVO {
 	@XmlAttribute
 	private String id;
@@ -62,7 +62,6 @@ public class JarProjectVO {
 	@XmlElementWrapper(name = "filePathXMLList")
 	@XmlElement(name = "item")
 	private List<String> filePathXMLList;
-	@XmlElement
 	private boolean firstSuccessRun;
 	
 	public boolean getFirstSuccessRun() {

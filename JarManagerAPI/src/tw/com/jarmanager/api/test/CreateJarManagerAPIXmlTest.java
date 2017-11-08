@@ -48,7 +48,7 @@ public class CreateJarManagerAPIXmlTest {
 		jarProjectVO.setFileName("SFStatus");
 		jarProjectVO.setTimeSeries(30000);
 		jarProjectVO.setDescription("SFStatus說明");
-		jarProjectVO.setJarFilePath("D:\\jarFilePath\\SFStatus.jar");
+		jarProjectVO.setJarFilePath("D:\\jarManager\\SFStatus.jar");
 		jarProjectVO.setNeedRun(true);
 
 		ArrayList<String> arrayList = new ArrayList<String>();

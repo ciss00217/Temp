@@ -66,9 +66,7 @@ public class ConsumerMessage {
 
 		if (queueBrowser == null) {
 			queueBrowser = session.createBrowser((Queue) destination);
-
-		} else {
-
+		}
 			enumeration = queueBrowser.getEnumeration();
 
 			int messageCount = 0;
@@ -111,7 +109,7 @@ public class ConsumerMessage {
 			enumeration = null;
 			logger.debug("beatID:" + beatID);
 			logger.debug("not exist");
-		}
+		
 		return true;
 	}
 
