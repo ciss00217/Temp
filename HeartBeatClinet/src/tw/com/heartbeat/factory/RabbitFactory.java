@@ -15,12 +15,12 @@ public class RabbitFactory {
 	public RMQDestination CreateRabbitDestination() {
 		XMLParser XMLParser = new XMLParser();
 
-		String amqpStr = XMLParser.getXMLText("heartBeatDestination", "amqp", filePath);
+		String amqpStr = tw.com.jms.util.XMLParser.getXMLText("heartBeatDestination", "amqp", filePath);
 		boolean amqp = Boolean.valueOf(amqpStr);
-		String amqpExchangeName = XMLParser.getXMLText("heartBeatDestination", "amqpExchangeName", filePath);
-		String amqpQueueName = XMLParser.getXMLText("heartBeatDestination", "amqpQueueName", filePath);
-		String routingKey = XMLParser.getXMLText("heartBeatDestination", "amqpRoutingKey", filePath);
-		String destinationName = XMLParser.getXMLText("heartBeatDestination", "destinationName", filePath);
+		String amqpExchangeName = tw.com.jms.util.XMLParser.getXMLText("heartBeatDestination", "amqpExchangeName", filePath);
+		String amqpQueueName = tw.com.jms.util.XMLParser.getXMLText("heartBeatDestination", "amqpQueueName", filePath);
+		String routingKey = tw.com.jms.util.XMLParser.getXMLText("heartBeatDestination", "amqpRoutingKey", filePath);
+		String destinationName = tw.com.jms.util.XMLParser.getXMLText("heartBeatDestination", "destinationName", filePath);
 
 		RMQDestination rmqDestination = new RMQDestination();
 		rmqDestination.setAmqp(amqp);

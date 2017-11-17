@@ -103,7 +103,6 @@ public class SocketClient {
 					}.getType();
 
 					jarProjectVOList = gson.fromJson(json, listType);
-
 				}
 
 			} catch (IOException e) {

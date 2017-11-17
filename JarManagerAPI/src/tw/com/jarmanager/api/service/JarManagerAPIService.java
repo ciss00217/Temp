@@ -15,6 +15,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -123,10 +125,7 @@ public class JarManagerAPIService {
 			logger.debug("addJarProjectVOXml:addJarProjectVOXml");
 
 			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
-
 			isSucess = socketClient.sendChangeBeatID(jarProjectVO);
-
-			List<JarProjectVO> jarProjectVOList = socketClient.getJarProjectVOList();
 
 			File file = new File(xmlFile);
 			JAXBContext jaxbContext = JAXBContext.newInstance(JarManagerAPIXMLVO.class);
@@ -156,6 +155,24 @@ public class JarManagerAPIService {
 		return true;
 	}
 	
+	public static JarProjectVO getJarProjectVO(String beatID) {
+		if ("".equals(beatID) || null == beatID) {
+			return null;
+		}
+
+		JarManagerAPIXMLVO jarManagerAPIXMLVO = getJarManagerAPIXMLVO();
+		List<JarProjectVO> jarProjectVOs = jarManagerAPIXMLVO.getJarProjectVOList();
+
+		for (JarProjectVO jarProjectVO : jarProjectVOs) {
+			String xmlBeatID = jarProjectVO.getBeatID();
+
+			if (beatID.equals(xmlBeatID)) {
+				return jarProjectVO;
+			}
+		}
+
+		return null;
+	}
 	
 	public static JarManagerAPIXMLVO getJarManagerAPIXMLVO() {
 
@@ -175,7 +192,6 @@ public class JarManagerAPIService {
 		}
 		return null;
 	}
-	
 	
 	public static boolean jarManagerSetUp(JarManagerAPIXMLVO jarManagerSetUp) {
 
@@ -209,72 +225,51 @@ public class JarManagerAPIService {
 		return false;
 	}
 	
-//	public static boolean updateJarProjectVOXml(JarProjectVO jarProjectVO, String befBeatID) {
-//
-//		if (befBeatID == null || "".equals(befBeatID.trim())) {
-//			logger.debug("befBeatID is null");
-//			return false;
-//		}
-//
-//		List<JarProjectVO> xmlJarVOList = getXMLJarProjectVOList(xmlFile);
-//
-//		for (JarProjectVO xmlJarVO : xmlJarVOList) {
-//			String xmlBeatIDId = xmlJarVO.getBeatID();
-//			String addVOBeatIDId = jarProjectVO.getBeatID();
-//
-//			if (xmlBeatIDId.equals(addVOBeatIDId) && !xmlBeatIDId.equals(befBeatID)) {
-//				logger.debug("befBeatID is repeat");
-//				return false;
-//			}
-//		}
-//
-//		try {
-//			logger.debug("updateJarProjectVOXml");
-//
-//			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
-//
-//			boolean isSucess = socketClient.sendChangeBeatID(jarProjectVO);
-//
-//			File file = new File(xmlFile);
-//			JAXBContext jaxbContext = JAXBContext.newInstance(JarManagerAPIXMLVO.class);
-//
-//			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-//			JarManagerAPIXMLVO jarManagerAPIXMLVO = (JarManagerAPIXMLVO) jaxbUnmarshaller.unmarshal(file);
-//
-//			List<JarProjectVO> list = jarManagerAPIXMLVO.getJarProjectVOList();
-//
-//			for (JarProjectVO mJarProjectVO : list) {
-//				if (mJarProjectVO.getBeatID().equals(befBeatID)) {
-//					mJarProjectVO.setBeatID(jarProjectVO.getBeatID());
-//					mJarProjectVO.setDescription(jarProjectVO.getDescription());
-//					mJarProjectVO.setFileName(jarProjectVO.getFileName());
-//					mJarProjectVO.setFilePathXMLList(jarProjectVO.getFilePathXMLList());
-//					mJarProjectVO.setJarFilePath(jarProjectVO.getJarFilePath());
-//					mJarProjectVO.setTimeSeries(jarProjectVO.getTimeSeries());
-//				}
-//			}
-//
-//			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-//
-//			// output pretty printed
-//			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-//
-//			jaxbMarshaller.marshal(jarManagerAPIXMLVO, file);
-//			jaxbMarshaller.marshal(jarManagerAPIXMLVO, System.out);
-//
-//		} catch (JAXBException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//			return false;
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		return true;
-//
-//	}
+	public static boolean turnJarProjectVOXml(String beatID, boolean isTurnOn) {
 
+		try {
+			logger.debug("closeJarProjectVOXml");
+
+			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
+			
+			List<String> ids=new ArrayList<String>();
+			ids.add(beatID);
+			socketClient.sendChangeBeatID(ids);
+
+			File file = new File(xmlFile);
+			JAXBContext jaxbContext = JAXBContext.newInstance(JarManagerAPIXMLVO.class);
+
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+			JarManagerAPIXMLVO jarManagerAPIXMLVO = (JarManagerAPIXMLVO) jaxbUnmarshaller.unmarshal(file);
+
+			List<JarProjectVO> list = jarManagerAPIXMLVO.getJarProjectVOList();
+
+			for (JarProjectVO mJarProjectVO : list) {
+				if (mJarProjectVO.getBeatID().equals(beatID)) {
+					mJarProjectVO.setNeedRun(isTurnOn);
+				}
+			}
+
+			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+			// output pretty printed
+			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+			jaxbMarshaller.marshal(jarManagerAPIXMLVO, file);
+			jaxbMarshaller.marshal(jarManagerAPIXMLVO, System.out);
+
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return true;
+	}
+	
 	public static boolean updateJarProjectVOXml(JarProjectVO jarProjectVO) {
 
 		boolean isSucess = chackData(jarProjectVO);
@@ -495,6 +490,8 @@ public class JarManagerAPIService {
 		SocketServer socketServer = new SocketServer(9527);
 		socketServer.start();
 
+		JarManagerAPIServiceMethod.setStatusToSocketServer(jarProjectVOMap, socketServer);
+		
 		while (true) {
 			if (socketServer.isApiXMLChange()) {
 				XMLjarVOs = getXMLNeedRunList(xmlFile);
@@ -750,11 +747,12 @@ public class JarManagerAPIService {
 ////		 //
 ////		 // System.out.println("請輸入執行參數");
 ////		
-//		 xmlFile = "D:\\JarManagerAPI.xml";
+//		 xmlFile = "D:\\jarManager\\JarManagerAPI.xml";
 //		 // xmlFile = "D:\\XMLFilePath\\JarManagerAPI.xml";
 //		
 //		
 //		 startManager();
+//	}
 
 		if (args.length == 1) {
 

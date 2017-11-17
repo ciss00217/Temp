@@ -326,7 +326,7 @@ public class JarManagerAPIServiceMethod {
 			boolean isExit = false;
 			for (JarProjectVO jarProjectVO : XMLjarVOs) {
 
-				if (jarProjectVO.getBeatID().equals(changeID)) {
+				if (jarProjectVO.getBeatID().equals(changeID)&&jarProjectVO.getNeedRun()) {
 					changeJarVOs.add(jarProjectVO);
 					isExit = true;
 				}

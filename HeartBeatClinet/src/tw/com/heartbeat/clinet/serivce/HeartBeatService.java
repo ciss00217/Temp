@@ -43,13 +43,19 @@ public class HeartBeatService {
 	public void beat() {
 
 		String beatID = heartBeatClientVO.getBeatID();
+		
+		if(beatID==null||"".equals(beatID.trim())){
+			logger.debug("beatID: " + beatID );
+			logger.debug("beatID is null");
+			return;
+		}
 
 		heartBeatClientVO.setLocalDateTime(LocalDateTime.now());
 
 		String beatString = gson.toJson(heartBeatClientVO);
 		try {
 			if (consumerMessage.checkMessage(beatID)) {
-				logger.debug("send: beatID:" + beatID);
+				logger.debug("send beatID:" + beatID);
 
 				producerMessage.send(beatString);
 			} else {
@@ -150,13 +156,17 @@ public class HeartBeatService {
 
 	public static ProducerMessage creartProducerMessage(String xmlFilePath) {
 		ProducerMessage producerMessage = null;
-		try {
+		
 
-			producerMessage = new ProducerMessage(xmlFilePath);
+			try {
+				producerMessage = new ProducerMessage(xmlFilePath);
+			} catch (JMSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				logger.debug("Error: " + e.getMessage());
+			}
 
-		} catch (JMSException e) {
-			logger.debug("Error: " + e.getMessage());
-		}
+
 
 		return producerMessage;
 	}
@@ -170,7 +180,8 @@ public class HeartBeatService {
 		heartBeatClientVO.setLocalDateTime(LocalDateTime.now());
 		heartBeatClientVO.setTimeSeries(10000);
 
-		HeartBeatService heartBeatService = new HeartBeatService("D:\\jarManager\\jarXml\\Q2W1-HeatBeatClinetBeans.xml");
+		HeartBeatService heartBeatService = new HeartBeatService("D:\\jarXml\\HeatBeatClinetBeans.xml");
+		//HeartBeatService heartBeatService = new HeartBeatService("D:\\jarManager\\jarXml\\order-HeatBeatClinetBeans.xml");
 		heartBeatService.setHeartBeatClientVO(heartBeatClientVO);
 		
 		heartBeatService.beat();
