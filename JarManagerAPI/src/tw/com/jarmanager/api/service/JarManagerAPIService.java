@@ -122,11 +122,6 @@ public class JarManagerAPIService {
 				}
 			}
 
-			logger.debug("addJarProjectVOXml:addJarProjectVOXml");
-
-			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
-			isSucess = socketClient.sendChangeBeatID(jarProjectVO);
-
 			File file = new File(xmlFile);
 			JAXBContext jaxbContext = JAXBContext.newInstance(JarManagerAPIXMLVO.class);
 
@@ -142,6 +137,11 @@ public class JarManagerAPIService {
 
 			jaxbMarshaller.marshal(jarManagerAPIXMLVO, file);
 			jaxbMarshaller.marshal(jarManagerAPIXMLVO, System.out);
+			
+			logger.debug("addJarProjectVOXml:addJarProjectVOXml");
+
+			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
+			isSucess = socketClient.sendChangeBeatID(jarProjectVO,jarManagerAPIXMLVO);
 
 		} catch (JAXBException e) {
 			// TODO Auto-generated catch block
@@ -230,12 +230,6 @@ public class JarManagerAPIService {
 		try {
 			logger.debug("closeJarProjectVOXml");
 
-			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
-			
-			List<String> ids=new ArrayList<String>();
-			ids.add(beatID);
-			socketClient.sendChangeBeatID(ids);
-
 			File file = new File(xmlFile);
 			JAXBContext jaxbContext = JAXBContext.newInstance(JarManagerAPIXMLVO.class);
 
@@ -257,6 +251,12 @@ public class JarManagerAPIService {
 
 			jaxbMarshaller.marshal(jarManagerAPIXMLVO, file);
 			jaxbMarshaller.marshal(jarManagerAPIXMLVO, System.out);
+			
+			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
+			
+			List<String> ids=new ArrayList<String>();
+			ids.add(beatID);
+			socketClient.sendChangeBeatID(ids,jarManagerAPIXMLVO);
 
 		} catch (JAXBException e) {
 			// TODO Auto-generated catch block
@@ -280,10 +280,6 @@ public class JarManagerAPIService {
 
 		try {
 			logger.debug("updateJarProjectVOXml");
-
-			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
-
-			isSucess = socketClient.sendChangeBeatID(jarProjectVO);
 
 			File file = new File(xmlFile);
 			JAXBContext jaxbContext = JAXBContext.newInstance(JarManagerAPIXMLVO.class);
@@ -310,6 +306,10 @@ public class JarManagerAPIService {
 
 			jaxbMarshaller.marshal(jarManagerAPIXMLVO, file);
 			jaxbMarshaller.marshal(jarManagerAPIXMLVO, System.out);
+			
+			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
+
+			isSucess = socketClient.sendChangeBeatID(jarProjectVO,jarManagerAPIXMLVO);
 
 		} catch (JAXBException e) {
 			// TODO Auto-generated catch block
@@ -326,11 +326,7 @@ public class JarManagerAPIService {
 	public static boolean deleteJarProjectVOXml(List<String> jarIDList) {
 
 		try {
-			
-			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
 
-			boolean isSucess = socketClient.sendChangeBeatID(jarIDList);
-			
 			logger.debug("addJarProjectVOXml:addJarProjectVOXml");
 
 			File file = new File(xmlFile);
@@ -354,6 +350,10 @@ public class JarManagerAPIService {
 
 			jaxbMarshaller.marshal(jarManagerAPIXMLVO, file);
 			jaxbMarshaller.marshal(jarManagerAPIXMLVO, System.out);
+			
+			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
+
+			boolean isSucess = socketClient.sendChangeBeatID(jarIDList,jarManagerAPIXMLVO);
 
 		} catch (JAXBException e) {
 			// TODO Auto-generated catch block
@@ -417,7 +417,18 @@ public class JarManagerAPIService {
 		List<JarProjectVO> jarNeedRunList= rabbitFactory.CreateProjectVOList();
 		jarNeedRunList.removeIf((JarProjectVO jarProjectVO) -> !jarProjectVO.getNeedRun());
 		return jarNeedRunList;
+	}
+	
+	/***
+	 * 用來獲得JarManagerAPIXML JarProjectVOList的方法
+	 **/
+	public static List<JarProjectVO> getXMLNeedRunList(JarManagerAPIXMLVO jarManagerAPIXMLVO) {
 
+		List<JarProjectVO> list = jarManagerAPIXMLVO.getJarProjectVOList();
+		List<JarProjectVO> jarNeedRunList = new ArrayList<JarProjectVO>(list);
+
+		jarNeedRunList.removeIf((JarProjectVO jarProjectVO) -> !jarProjectVO.getNeedRun());
+		return jarNeedRunList;
 	}
 
 	@AnnotationVO(description = "關閉程序", methodName = "-closeManager  D:\\yourFileXmlPath")
@@ -494,7 +505,10 @@ public class JarManagerAPIService {
 		
 		while (true) {
 			if (socketServer.isApiXMLChange()) {
-				XMLjarVOs = getXMLNeedRunList(xmlFile);
+				JarManagerAPIXMLVO jarManagerAPIXMLVO = socketServer.getJarManagerAPIXMLVO();
+				if(jarManagerAPIXMLVO!=null){
+					XMLjarVOs = getXMLNeedRunList(jarManagerAPIXMLVO);
+				}
 			}
 
 			List<JarProjectVO> reStartList = null;
@@ -528,65 +542,6 @@ public class JarManagerAPIService {
 
 		}
 
-		// HashMap<String, JarProjectVO> jarProjectVOMap = reStart(reStartList)
-		
-		//		setStatus(newJarProjectVOMap,socketServer);
-		
-		
-
-//		ResponseVO responseVO = startJars();
-//
-//		logger.debug("responseVO isSuccess: " + responseVO.isSuccess());
-//
-//		if (responseVO.isSuccess()) {
-//
-//			SocketServer socketServer = new SocketServer(9527);
-//			socketServer.start();
-//
-//			// 獲得啟動的managerVO
-//			HashMap<String, JarProjectVO> oldJarProjectVOMap = (HashMap<String, JarProjectVO>) responseVO.getObj();
-//
-//			while (true) {
-//
-//				if (exit) {
-//					break;
-//				}
-//
-//				try {
-//					oldJarProjectVOMap = mapRemoveNoExitByXml(oldJarProjectVOMap);
-//				} catch (IOException e2) {
-//					// TODO Auto-generated catch block
-//					e2.printStackTrace();
-//				}
-//
-//				List<JarProjectVO> deathList = null;
-//				try {
-//					deathList = getDeathList(oldJarProjectVOMap);
-//				} catch (JMSException e1) {
-//					logger.debug("Error:" + e1.getMessage());
-//				}
-//
-//				try {
-//					HashMap<String, JarProjectVO> newJarProjectVOMap = reStart(deathList, oldJarProjectVOMap);
-//					oldJarProjectVOMap = newJarProjectVOMap;
-//				} catch (IOException e) {
-//					logger.debug("Error:" + e.getMessage());
-//				}
-//
-//				List<JarProjectVO> jarProjectVOList = getJarProjectVOList(oldJarProjectVOMap);
-//
-//				try {
-//					RabbitFactory rabbitFactory = new RabbitFactory(xmlFile);
-//					logger.debug("sleep:" + rabbitFactory.CreateManagerVO().getReCheckTime());
-//					Thread.sleep(rabbitFactory.CreateManagerVO().getReCheckTime());
-//				} catch (InterruptedException e) {
-//					logger.debug("Error:" + e.getMessage());
-//				}
-//				socketServer.setJarProjectVOList(jarProjectVOList);
-//
-//			}
-//
-//		}
 	}
 
 	/**

@@ -13,6 +13,7 @@ import java.util.*;
 import com.google.gson.Gson;
 
 import tw.com.jarmanager.api.service.JarManagerAPIService;
+import tw.com.jarmanager.api.vo.JarManagerAPIXMLVO;
 import tw.com.jarmanager.api.vo.JarProjectVO;
 import tw.com.jarmanager.api.vo.RequestVO;
 
@@ -21,8 +22,16 @@ public class SocketServer extends Thread {
 	private List<JarProjectVO> jarProjectVOList;
 	private HashSet<String> changeIdSet;
 	private boolean isApiXMLChange;
-
+	private JarManagerAPIXMLVO jarManagerAPIXMLVO;
 	
+	public JarManagerAPIXMLVO getJarManagerAPIXMLVO() {
+		return jarManagerAPIXMLVO;
+	}
+
+	public void setJarManagerAPIXMLVO(JarManagerAPIXMLVO jarManagerAPIXMLVO) {
+		this.jarManagerAPIXMLVO = jarManagerAPIXMLVO;
+	}
+
 	public HashSet<String> getChangeIdSet() {
 		return changeIdSet;
 	}
@@ -174,14 +183,14 @@ public class SocketServer extends Thread {
 							}
 
 						} else if ("sendChangeBeatID".equals(action)) {
-							List<String> ids=responseVO.getIds();
-							
-							for(String str:ids){
+							List<String> ids = responseVO.getIds();
+							jarManagerAPIXMLVO = responseVO.getJarManagerAPIXMLVO();
+
+							for (String str : ids) {
 								changeIdSet.add(str);
 							}
 							setApiXMLChange(true);
-							
-					
+
 							output.writeUTF("Success");
 
 						}

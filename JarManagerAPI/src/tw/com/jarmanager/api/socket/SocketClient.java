@@ -11,6 +11,7 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import tw.com.jarmanager.api.vo.JarManagerAPIXMLVO;
 import tw.com.jarmanager.api.vo.JarProjectVO;
 import tw.com.jarmanager.api.vo.RequestVO;
 
@@ -127,7 +128,7 @@ public class SocketClient {
 	}
 	
 	
-	public boolean sendChangeBeatID(List<String> ids) throws IOException {
+	public boolean sendChangeBeatID(List<String> ids,JarManagerAPIXMLVO jarManagerAPIXMLVO) throws IOException {
 		Socket socket = null;
 		boolean isSucess = false;
 		Gson gson = new Gson();
@@ -145,7 +146,7 @@ public class SocketClient {
 
 				RequestVO requestVO = new RequestVO();
 				requestVO.setIds(ids);
-
+				requestVO.setJarManagerAPIXMLVO(jarManagerAPIXMLVO);
 				requestVO.setAction("sendChangeBeatID");
 
 				String requestStr = gson.toJson(requestVO, RequestVO.class);
@@ -178,7 +179,7 @@ public class SocketClient {
 		return isSucess;
 	}
 	
-	public boolean sendChangeBeatID(JarProjectVO jarProjectVO) throws IOException {
+	public boolean sendChangeBeatID(JarProjectVO jarProjectVO,JarManagerAPIXMLVO jarManagerAPIXMLVO) throws IOException {
 		Socket socket = null;
 		boolean isSucess = false;
 		Gson gson = new Gson();
@@ -197,7 +198,8 @@ public class SocketClient {
 
 				RequestVO requestVO = new RequestVO();
 				requestVO.setIds(ids);
-
+				requestVO.setJarManagerAPIXMLVO(jarManagerAPIXMLVO);
+				
 				requestVO.setAction("sendChangeBeatID");
 
 				String requestStr = gson.toJson(requestVO, RequestVO.class);

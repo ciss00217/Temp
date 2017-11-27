@@ -184,7 +184,7 @@ public class JarManagerAPIServiceMethod {
 			restartJarVOs = getRestartJarVOs(changeIDs);
 			
 			socketServer.setApiXMLChange(false);
-			
+			socketServer.setJarManagerAPIXMLVO(null);
 			socketServer.setChangeIdSet(new HashSet<String>());
 
 		}

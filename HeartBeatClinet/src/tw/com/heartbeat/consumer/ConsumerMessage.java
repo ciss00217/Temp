@@ -8,14 +8,18 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
+import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.QueueBrowser;
 import javax.jms.Session;
+import javax.jms.TextMessage;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
+import com.rabbitmq.jms.admin.RMQConnectionFactory;
+import com.rabbitmq.jms.admin.RMQDestination;
 
 import tw.com.heartbeat.clinet.vo.HeartBeatClientVO;
 import tw.com.heartbeat.factory.RabbitFactory;
@@ -112,5 +116,7 @@ public class ConsumerMessage {
 		
 		return true;
 	}
+	
+
 
 }
