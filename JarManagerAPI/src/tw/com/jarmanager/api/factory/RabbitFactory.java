@@ -7,9 +7,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.rabbitmq.jms.admin.RMQConnectionFactory;
 import com.rabbitmq.jms.admin.RMQDestination;
 
+import tw.com.jarmanager.api.service.JarManagerAPIServiceMethod;
 import tw.com.jarmanager.api.vo.HeartBeatConnectionFactoryVO;
 import tw.com.jarmanager.api.vo.HeartBeatDestinationVO;
 import tw.com.jarmanager.api.vo.JarManagerAPIXMLVO;
@@ -17,6 +21,8 @@ import tw.com.jarmanager.api.vo.JarProjectVO;
 import tw.com.jarmanager.api.vo.ManagerVO;
 
 public class RabbitFactory {
+	private static final Logger logger = LogManager.getLogger(RabbitFactory.class);
+
 	String filePath;
 
 	public RabbitFactory(String filePath) {
@@ -32,7 +38,7 @@ public class RabbitFactory {
 			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 			JarManagerAPIXMLVO jarManagerAPIXMLVO = (JarManagerAPIXMLVO) jaxbUnmarshaller.unmarshal(file);
 			
-			System.out.println(jarManagerAPIXMLVO.getHeartBeatDestinationVO().getDestinationName());
+			logger.debug(jarManagerAPIXMLVO.getHeartBeatDestinationVO().getDestinationName());
 			
 			HeartBeatDestinationVO heartBeatDestinationVO = jarManagerAPIXMLVO.getHeartBeatDestinationVO();
 

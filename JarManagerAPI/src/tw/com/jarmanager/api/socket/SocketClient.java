@@ -4,18 +4,25 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import tw.com.jarmanager.api.factory.RabbitFactory;
 import tw.com.jarmanager.api.vo.JarManagerAPIXMLVO;
 import tw.com.jarmanager.api.vo.JarProjectVO;
 import tw.com.jarmanager.api.vo.RequestVO;
 
 public class SocketClient {
+	private static final Logger logger = LogManager.getLogger(SocketClient.class);
+
 	static String host = "";
 	static int port = 0;
 
@@ -45,7 +52,7 @@ public class SocketClient {
 
 					Gson gson = new Gson();
 
-					System.out.println(json);
+					logger.debug(json);
 
 					Type listType = new TypeToken<List<JarProjectVO>>() {
 					}.getType();
@@ -54,7 +61,7 @@ public class SocketClient {
 				}
 
 			} catch (IOException e) {
-				System.out.println(e.getMessage());
+				logger.debug(e.getMessage());
 
 			} finally {
 				if (input != null)
@@ -108,7 +115,7 @@ public class SocketClient {
 
 			} catch (IOException e) {
 				e.printStackTrace();
-				System.out.println(e.getMessage());
+				logger.debug(e.getMessage());
 
 			} finally {
 				if (input != null)
@@ -116,6 +123,8 @@ public class SocketClient {
 				if (output != null)
 					output.close();
 			}
+		} catch (ConnectException e) {
+			logger.debug("not Connect");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -158,9 +167,11 @@ public class SocketClient {
 					isSucess = true;
 				}
 
-			} catch (IOException e) {
+			} catch (ConnectException e) {
+				logger.debug("not Connect");
+			}  catch (IOException e) {
 				e.printStackTrace();
-				System.out.println(e.getMessage());
+				logger.debug(e.getMessage());
 
 			} finally {
 				if (input != null)
@@ -213,7 +224,7 @@ public class SocketClient {
 
 			} catch (IOException e) {
 				e.printStackTrace();
-				System.out.println(e.getMessage());
+				logger.debug(e.getMessage());
 
 			} finally {
 				if (input != null)
@@ -221,7 +232,11 @@ public class SocketClient {
 				if (output != null)
 					output.close();
 			}
-		} catch (IOException e) {
+			
+			
+		} catch (ConnectException e) {
+			logger.debug("not Connect");
+		}  catch (IOException e) {
 			e.printStackTrace();
 		} finally {
 			if (socket != null) {

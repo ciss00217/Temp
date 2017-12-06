@@ -43,69 +43,69 @@ public class CreateJarManagerAPIXmlTest {
 		jAPIXML.setHeartBeatDestinationVO(heartBeatDestinationVO);
 		jAPIXML.setManagerVO(managerVO);
 
-		JarProjectVO jarProjectVO = new JarProjectVO();
-		jarProjectVO.setBeatID("SFStatus");
-		jarProjectVO.setFileName("SFStatus");
-		jarProjectVO.setTimeSeries(30000);
-		jarProjectVO.setDescription("SFStatus說明");
-		jarProjectVO.setJarFilePath("D:\\jarManager\\SFStatus.jar");
-		jarProjectVO.setNeedRun(true);
-
-		ArrayList<String> arrayList = new ArrayList<String>();
-		arrayList.add("D:\\jarManager\\jarXml\\SFStatus.xml");
-		arrayList.add("D:\\jarManager\\jarXml\\HeatBeatClinetBeans.xml");
-
-		jarProjectVO.setFilePathXMLList(arrayList);
-
-		jarProjectVOList.add(jarProjectVO);
-
-		JarProjectVO jarProjectVO1 = new JarProjectVO();
-		jarProjectVO1.setBeatID("SFOutboundDetail");
-		jarProjectVO1.setFileName("SFOutboundDetail");
-		jarProjectVO1.setTimeSeries(30000);
-		jarProjectVO1.setDescription("SFOutboundDetail說明");
-		jarProjectVO1.setJarFilePath("D:\\jarFilePath\\SFOutboundDetail.jar");
-		jarProjectVO1.setNeedRun(true);
-
-		ArrayList<String> arrayList1 = new ArrayList<String>();
-		arrayList1.add("D:\\jarManager\\jarXml\\SFOutboundDetail.xml");
-		arrayList1.add("D:\\jarManager\\jarXml\\HeatBeatClinetBeans.xml");
-		jarProjectVO1.setFilePathXMLList(arrayList1);
-
-		jarProjectVOList.add(jarProjectVO1);
-
-		JarProjectVO jarProjectVO2 = new JarProjectVO();
-		jarProjectVO2.setBeatID("SFBalance");
-		jarProjectVO2.setFileName("SFBalance");
-		jarProjectVO2.setTimeSeries(30000);
-		jarProjectVO2.setDescription("SFBalance說明");
-		jarProjectVO2.setJarFilePath("D:\\jarFilePath\\SFBalance.jar");
-		jarProjectVO2.setNeedRun(true);
-
-		ArrayList<String> arrayList2 = new ArrayList<String>();
-		arrayList2.add("D:\\jarManager\\jarXml\\SFBalance.xml");
-		arrayList2.add("D:\\jarManager\\jarXml\\HeatBeatClinetBeans.xml");
-
-		jarProjectVO2.setFilePathXMLList(arrayList2);
-
-		jarProjectVOList.add(jarProjectVO2);
-
-		JarProjectVO jarProjectVO3 = new JarProjectVO();
-		jarProjectVO3.setBeatID("Q2W");
-		jarProjectVO3.setFileName("Q2W");
-		jarProjectVO3.setTimeSeries(60000);
-		jarProjectVO3.setDescription("Q2W說明");
-		jarProjectVO3.setJarFilePath("D:\\jarFilePath\\Q2W.jar");
-		jarProjectVO3.setNeedRun(true);
-
-		ArrayList<String> arrayList3 = new ArrayList<String>();
-		arrayList3.add("D:\\jarManager\\jarXml\\q2w-config.xml");
-		arrayList3.add("D:\\jarManager\\jarXml\\xmlconverter-config.xml");
-		arrayList3.add("D:\\jarManager\\jarXml\\HeatBeatClinetBeans.xml");
-
-		jarProjectVO3.setFilePathXMLList(arrayList3);
-
-		jarProjectVOList.add(jarProjectVO3);
+//		JarProjectVO jarProjectVO = new JarProjectVO();
+//		jarProjectVO.setBeatID("SFStatus");
+//		jarProjectVO.setFileName("SFStatus");
+//		jarProjectVO.setTimeSeries(30000);
+//		jarProjectVO.setDescription("SFStatus說明");
+//		jarProjectVO.setJarFilePath("D:\\jarManager\\SFStatus.jar");
+//		jarProjectVO.setNeedRun(true);
+//
+//		ArrayList<String> arrayList = new ArrayList<String>();
+//		arrayList.add("D:\\jarManager\\jarXml\\SFStatus.xml");
+//		arrayList.add("D:\\jarManager\\jarXml\\HeatBeatClinetBeans.xml");
+//
+//		jarProjectVO.setFilePathXMLList(arrayList);
+//
+//		jarProjectVOList.add(jarProjectVO);
+//
+//		JarProjectVO jarProjectVO1 = new JarProjectVO();
+//		jarProjectVO1.setBeatID("SFOutboundDetail");
+//		jarProjectVO1.setFileName("SFOutboundDetail");
+//		jarProjectVO1.setTimeSeries(30000);
+//		jarProjectVO1.setDescription("SFOutboundDetail說明");
+//		jarProjectVO1.setJarFilePath("D:\\jarFilePath\\SFOutboundDetail.jar");
+//		jarProjectVO1.setNeedRun(true);
+//
+//		ArrayList<String> arrayList1 = new ArrayList<String>();
+//		arrayList1.add("D:\\jarManager\\jarXml\\SFOutboundDetail.xml");
+//		arrayList1.add("D:\\jarManager\\jarXml\\HeatBeatClinetBeans.xml");
+//		jarProjectVO1.setFilePathXMLList(arrayList1);
+//
+//		jarProjectVOList.add(jarProjectVO1);
+//
+//		JarProjectVO jarProjectVO2 = new JarProjectVO();
+//		jarProjectVO2.setBeatID("SFBalance");
+//		jarProjectVO2.setFileName("SFBalance");
+//		jarProjectVO2.setTimeSeries(30000);
+//		jarProjectVO2.setDescription("SFBalance說明");
+//		jarProjectVO2.setJarFilePath("D:\\jarFilePath\\SFBalance.jar");
+//		jarProjectVO2.setNeedRun(true);
+//
+//		ArrayList<String> arrayList2 = new ArrayList<String>();
+//		arrayList2.add("D:\\jarManager\\jarXml\\SFBalance.xml");
+//		arrayList2.add("D:\\jarManager\\jarXml\\HeatBeatClinetBeans.xml");
+//
+//		jarProjectVO2.setFilePathXMLList(arrayList2);
+//
+//		jarProjectVOList.add(jarProjectVO2);
+//
+//		JarProjectVO jarProjectVO3 = new JarProjectVO();
+//		jarProjectVO3.setBeatID("Q2W");
+//		jarProjectVO3.setFileName("Q2W");
+//		jarProjectVO3.setTimeSeries(60000);
+//		jarProjectVO3.setDescription("Q2W說明");
+//		jarProjectVO3.setJarFilePath("D:\\jarFilePath\\Q2W.jar");
+//		jarProjectVO3.setNeedRun(true);
+//
+//		ArrayList<String> arrayList3 = new ArrayList<String>();
+//		arrayList3.add("D:\\jarManager\\jarXml\\q2w-config.xml");
+//		arrayList3.add("D:\\jarManager\\jarXml\\xmlconverter-config.xml");
+//		arrayList3.add("D:\\jarManager\\jarXml\\HeatBeatClinetBeans.xml");
+//
+//		jarProjectVO3.setFilePathXMLList(arrayList3);
+//
+//		jarProjectVOList.add(jarProjectVO3);
 
 		jAPIXML.setJarProjectVOList(jarProjectVOList);
 

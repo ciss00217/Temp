@@ -8,16 +8,23 @@ import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.*;
 
 import com.google.gson.Gson;
 
 import tw.com.jarmanager.api.service.JarManagerAPIService;
+import tw.com.jarmanager.api.service.JarManagerAPIServiceMethod;
 import tw.com.jarmanager.api.vo.JarManagerAPIXMLVO;
 import tw.com.jarmanager.api.vo.JarProjectVO;
 import tw.com.jarmanager.api.vo.RequestVO;
 
 public class SocketServer extends Thread {
+	private static final Logger logger = LogManager.getLogger(SocketServer.class);
+
 	private int port;
 	private List<JarProjectVO> jarProjectVOList;
 	private HashSet<String> changeIdSet;
@@ -68,7 +75,7 @@ public class SocketServer extends Thread {
 		ExecutorService threadExecutor = Executors.newCachedThreadPool();
 		try {
 			serverSocket = new ServerSocket(port);
-			System.out.println("Server listening requests...");
+			logger.debug("Server listening requests...");
 			while (true) {
 				Socket socket = serverSocket.accept();
 				threadExecutor.execute(new RequestThread(socket));
@@ -93,7 +100,7 @@ public class SocketServer extends Thread {
 		ExecutorService threadExecutor = Executors.newCachedThreadPool();
 		try {
 			serverSocket = new ServerSocket(port);
-			System.out.println("Server listening requests...");
+			logger.debug("Server listening requests...");
 			while (true) {
 				Socket socket = serverSocket.accept();
 				threadExecutor.execute(new RequestThread(socket));
@@ -153,7 +160,7 @@ public class SocketServer extends Thread {
 				while (true) {
 					String socketRequestStr = input.readUTF();
 
-					System.out.println("socketRequestStr:" + socketRequestStr);
+					logger.debug("socketRequestStr:" + socketRequestStr);
 
 					if (socketRequestStr != null && socketRequestStr.length() > 0) {
 
@@ -179,7 +186,7 @@ public class SocketServer extends Thread {
 								//System.out.println("jarProjectVOList.json :" + json);
 								output.writeUTF(json);
 							} else {
-								System.out.println("jarProjectVOList is null");
+								logger.debug("jarProjectVOList is null");
 							}
 
 						} else if ("sendChangeBeatID".equals(action)) {

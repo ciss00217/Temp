@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.net.ConnectException;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
@@ -72,7 +73,7 @@ public class JarManagerAPIService {
 	public static void setXmlFilePath(String xmlFile) {
 		JarManagerAPIService.xmlFile = xmlFile;
 	}
-	
+
 	public static boolean chackData(JarProjectVO jarProjectVO) {
 
 		String beatID = jarProjectVO.getBeatID();
@@ -98,8 +99,36 @@ public class JarManagerAPIService {
 			return false;
 		}
 
+		JarManagerAPIXMLVO jarManagerAPIXMLVO = getJarManagerAPIXMLVO();
+
+		List<JarProjectVO> list = jarManagerAPIXMLVO.getJarProjectVOList();
+
+		for (JarProjectVO exitJarProjectVO : list) {
+
+			String exitBeatID = exitJarProjectVO.getBeatID();
+			String exitJarFilePath = exitJarProjectVO.getJarFilePath();
+
+			if (exitBeatID.equals(beatID) && !exitJarFilePath.equals(jarFilePath)) {
+				return false;
+			}
+		}
+
 		return true;
 
+	}
+	
+	public boolean isJarListHasSameFileName(String fileName){
+		JarManagerAPIXMLVO jarManagerAPIXMLVO = getJarManagerAPIXMLVO();
+		List<JarProjectVO> list = jarManagerAPIXMLVO.getJarProjectVOList();
+
+		for (JarProjectVO exitJarProjectVO : list) {
+			String exitFileName = exitJarProjectVO.getFileName();
+			if (exitFileName.equals(fileName)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public static boolean addJarProjectVOXml(JarProjectVO jarProjectVO) {
@@ -137,11 +166,11 @@ public class JarManagerAPIService {
 
 			jaxbMarshaller.marshal(jarManagerAPIXMLVO, file);
 			jaxbMarshaller.marshal(jarManagerAPIXMLVO, System.out);
-			
+
 			logger.debug("addJarProjectVOXml:addJarProjectVOXml");
 
 			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
-			isSucess = socketClient.sendChangeBeatID(jarProjectVO,jarManagerAPIXMLVO);
+			isSucess = socketClient.sendChangeBeatID(jarProjectVO, jarManagerAPIXMLVO);
 
 		} catch (JAXBException e) {
 			// TODO Auto-generated catch block
@@ -154,7 +183,7 @@ public class JarManagerAPIService {
 
 		return true;
 	}
-	
+
 	public static JarProjectVO getJarProjectVO(String beatID) {
 		if ("".equals(beatID) || null == beatID) {
 			return null;
@@ -173,7 +202,7 @@ public class JarManagerAPIService {
 
 		return null;
 	}
-	
+
 	public static JarManagerAPIXMLVO getJarManagerAPIXMLVO() {
 
 		try {
@@ -192,7 +221,7 @@ public class JarManagerAPIService {
 		}
 		return null;
 	}
-	
+
 	public static boolean jarManagerSetUp(JarManagerAPIXMLVO jarManagerSetUp) {
 
 		try {
@@ -224,7 +253,7 @@ public class JarManagerAPIService {
 		}
 		return false;
 	}
-	
+
 	public static boolean turnJarProjectVOXml(String beatID, boolean isTurnOn) {
 
 		try {
@@ -251,12 +280,18 @@ public class JarManagerAPIService {
 
 			jaxbMarshaller.marshal(jarManagerAPIXMLVO, file);
 			jaxbMarshaller.marshal(jarManagerAPIXMLVO, System.out);
-			
-			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
-			
-			List<String> ids=new ArrayList<String>();
-			ids.add(beatID);
-			socketClient.sendChangeBeatID(ids,jarManagerAPIXMLVO);
+
+			try {
+
+				SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
+
+				List<String> ids = new ArrayList<String>();
+				ids.add(beatID);
+				socketClient.sendChangeBeatID(ids, jarManagerAPIXMLVO);
+			} catch (ConnectException e) {
+
+				logger.debug("not Connect");
+			}
 
 		} catch (JAXBException e) {
 			// TODO Auto-generated catch block
@@ -269,7 +304,7 @@ public class JarManagerAPIService {
 
 		return true;
 	}
-	
+
 	public static boolean updateJarProjectVOXml(JarProjectVO jarProjectVO) {
 
 		boolean isSucess = chackData(jarProjectVO);
@@ -306,10 +341,15 @@ public class JarManagerAPIService {
 
 			jaxbMarshaller.marshal(jarManagerAPIXMLVO, file);
 			jaxbMarshaller.marshal(jarManagerAPIXMLVO, System.out);
-			
-			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
 
-			isSucess = socketClient.sendChangeBeatID(jarProjectVO,jarManagerAPIXMLVO);
+			try {
+				SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
+
+				isSucess = socketClient.sendChangeBeatID(jarProjectVO, jarManagerAPIXMLVO);
+			} catch (ConnectException e) {
+
+				logger.debug("not Connect");
+			}
 
 		} catch (JAXBException e) {
 			// TODO Auto-generated catch block
@@ -350,11 +390,14 @@ public class JarManagerAPIService {
 
 			jaxbMarshaller.marshal(jarManagerAPIXMLVO, file);
 			jaxbMarshaller.marshal(jarManagerAPIXMLVO, System.out);
-			
-			SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
+			try {
+				SocketClient socketClient = new SocketClient("127.0.0.1", 9527);
 
-			boolean isSucess = socketClient.sendChangeBeatID(jarIDList,jarManagerAPIXMLVO);
+				boolean isSucess = socketClient.sendChangeBeatID(jarIDList, jarManagerAPIXMLVO);
+			} catch (ConnectException e) {
 
+				logger.debug("not Connect");
+			}
 		} catch (JAXBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -408,17 +451,17 @@ public class JarManagerAPIService {
 		RabbitFactory rabbitFactory = new RabbitFactory(XMLPath);
 		return rabbitFactory.CreateProjectVOList();
 	}
-	
+
 	/***
 	 * 用來獲得JarManagerAPIXML JarProjectVOList的方法
 	 **/
 	public static List<JarProjectVO> getXMLNeedRunList(String XMLPath) {
 		RabbitFactory rabbitFactory = new RabbitFactory(XMLPath);
-		List<JarProjectVO> jarNeedRunList= rabbitFactory.CreateProjectVOList();
+		List<JarProjectVO> jarNeedRunList = rabbitFactory.CreateProjectVOList();
 		jarNeedRunList.removeIf((JarProjectVO jarProjectVO) -> !jarProjectVO.getNeedRun());
 		return jarNeedRunList;
 	}
-	
+
 	/***
 	 * 用來獲得JarManagerAPIXML JarProjectVOList的方法
 	 **/
@@ -438,7 +481,7 @@ public class JarManagerAPIService {
 
 	/**********************
 	 * 指令說明
-	 * ********************/
+	 ********************/
 	public static void getAllMethodDescription() throws ClassNotFoundException {
 		Class<?> c = Class.forName("tw.com.jarmanager.api.service.JarManagerAPIService");
 		Method[] methods = c.getMethods();
@@ -457,42 +500,41 @@ public class JarManagerAPIService {
 	}
 
 	/******************************
-	 * 改版使用socketServer 來控制	新	刪	修
+	 * 改版使用socketServer 來控制 新 刪 修
 	 * 
-	 * 1.啟動		JarManagerAPIServiceMethod.startJars
-	 * 		1.取得XML
+	 * 1.啟動 JarManagerAPIServiceMethod.startJars 1.取得XML
 	 * 
-	 * 		2.轉成物件   
+	 * 2.轉成物件
 	 * 
-	 * 		3.取出List<jarVO>
+	 * 3.取出List<jarVO>
 	 * 
-	 * 		4.迴圈執行啟動
+	 * 4.迴圈執行啟動
 	 * 
-	 * 		5.放入map
+	 * 5.放入map
 	 * 
+	 * 1.檢查socketServer來判別是否有新刪修
 	 * 
-	 * 2.檢查		JarManagerAPIServiceMethod.checkData
-	 * 		1.檢查socketServer來判別是否有新刪修 
-	 * 	
-	 * 		2.有的話 就讀取   XML  沒有的話取全域變數
+	 * 2.檢查 JarManagerAPIServiceMethod.checkData 
 	 * 
-	 * 		3.取得須重啟的
+	 * 2.有的話 就讀取 XML 沒有的話取全域變數
 	 * 
-	 * 3.重啟	 JarManagerAPIServiceMethod.reStart
-	 * 		
-	 * 		1.重啟須重啟的
+	 * 3.取得須重啟的
+	 * 
+	 * 3.重啟 JarManagerAPIServiceMethod.reStart
+	 * 
+	 * 1.重啟須重啟的
 	 * 
 	 * 
 	 * 4.放入狀態 到 socketServer
 	 * 
 	 * 5.等待
 	 * 
-	 * 6.當ui修改時 回傳狀態 要改成	待重啟中
+	 * 6.當ui修改時 回傳狀態 要改成 待重啟中
 	 * 
-	 *  @throws IOException 
-	 * *********************************/
+	 * @throws IOException
+	 *********************************/
 	@AnnotationVO(description = "啟動JarManagerService 用來監控觀察底下的JAR 如果client 阻塞 或 關閉 就重啟它", methodName = "-startManager D:\\yourFileXmlPath")
-	public static void startManager()  {
+	public static void startManager() {
 
 		XMLjarVOs = getXMLNeedRunList(xmlFile);
 
@@ -502,11 +544,11 @@ public class JarManagerAPIService {
 		socketServer.start();
 
 		JarManagerAPIServiceMethod.setStatusToSocketServer(jarProjectVOMap, socketServer);
-		
+
 		while (true) {
 			if (socketServer.isApiXMLChange()) {
 				JarManagerAPIXMLVO jarManagerAPIXMLVO = socketServer.getJarManagerAPIXMLVO();
-				if(jarManagerAPIXMLVO!=null){
+				if (jarManagerAPIXMLVO != null) {
 					XMLjarVOs = getXMLNeedRunList(jarManagerAPIXMLVO);
 				}
 			}
@@ -677,15 +719,19 @@ public class JarManagerAPIService {
 	 * @throws IOException
 	 */
 	public static List<JarProjectVO> getJarProjectVOStatus(String host, int port) throws JMSException, IOException {
+		List<JarProjectVO> jarProjectVOList = null;
+		try {
+			SocketClient socketClient = new SocketClient(host, port);
 
-		SocketClient socketClient = new SocketClient(host, port);
+			jarProjectVOList = socketClient.getJarProjectVOList();
+		} catch (ConnectException e) {
 
-		List<JarProjectVO> jarProjectVOList = socketClient.getJarProjectVOList();
-
+			logger.debug("not Connect");
+		}
 		return jarProjectVOList;
 
 	}
-	
+
 	/**
 	 * args[0]: action args[1]:
 	 * 
@@ -695,19 +741,19 @@ public class JarManagerAPIService {
 	 **/
 	public static void main(String[] args) throws ClassNotFoundException, JMSException {
 
-////		 // xmlFile = "D:\\JarManagerAPI.xml";
-////		 //
-////		 // ConsumerMessage aaa= new ConsumerMessage();
-////		 // List<HeartBeatClientVO> aaaa=aaa.getSoleHeartBeatClientVOList();
-////		 //
-////		 // System.out.println("請輸入執行參數");
-////		
-//		 xmlFile = "D:\\jarManager\\JarManagerAPI.xml";
-//		 // xmlFile = "D:\\XMLFilePath\\JarManagerAPI.xml";
-//		
-//		
-//		 startManager();
-//	}
+		//// // xmlFile = "D:\\JarManagerAPI.xml";
+		//// //
+		//// // ConsumerMessage aaa= new ConsumerMessage();
+		//// // List<HeartBeatClientVO> aaaa=aaa.getSoleHeartBeatClientVOList();
+		//// //
+		//// // System.out.println("請輸入執行參數");
+		////
+		// xmlFile = "D:\\jarManager\\JarManagerAPI.xml";
+		// // xmlFile = "D:\\XMLFilePath\\JarManagerAPI.xml";
+		//
+		//
+		// startManager();
+		// }
 
 		if (args.length == 1) {
 

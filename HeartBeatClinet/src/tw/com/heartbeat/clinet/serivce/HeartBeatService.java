@@ -1,8 +1,11 @@
 package tw.com.heartbeat.clinet.serivce;
 
+import java.io.File;
 import java.time.LocalDateTime;
 
 import javax.jms.JMSException;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,6 +14,9 @@ import com.google.gson.Gson;
 import com.rabbitmq.jms.admin.RMQConnectionFactory;
 
 import tw.com.heartbeat.clinet.vo.HeartBeatClientVO;
+import tw.com.heartbeat.clinet.vo.HeartBeatClientXMLVO;
+import tw.com.heartbeat.clinet.vo.HeartBeatConnectionFactoryVO;
+import tw.com.heartbeat.clinet.vo.HeartBeatDestinationVO;
 import tw.com.heartbeat.consumer.ConsumerMessage;
 import tw.com.heartbeat.factory.RabbitFactory;
 import tw.com.heartbeat.producer.ProducerMessage;
@@ -25,10 +31,14 @@ public class HeartBeatService {
 	Gson gson = null;
 
 	public HeartBeatService(String xmlFilePath) {
+		RabbitFactory rabbitFactory = new RabbitFactory(xmlFilePath);
+		HeartBeatClientXMLVO heartBeatClientXMLVO = rabbitFactory.getHeartBeatClientXMLVO();
 		this.gson = new Gson();
 		this.xmlFilePath = xmlFilePath;
 		this.producerMessage = creartProducerMessage(xmlFilePath);
 		this.consumerMessage = creartConsumerMessage(xmlFilePath);
+		this.heartBeatClientVO = heartBeatClientXMLVO.getHeartBeatClientVO();
+
 	}
 
 	public HeartBeatService(HeartBeatClientVO heartBeatClientVO, String xmlFilePath) {
@@ -38,6 +48,27 @@ public class HeartBeatService {
 		this.consumerMessage = creartConsumerMessage(xmlFilePath);
 
 		this.gson = new Gson();
+	}
+	
+	public boolean createHeartBeatXML(HeartBeatClientXMLVO heartBeatClientXMLVO, String filePath) {
+		boolean isSucess = false;
+		try {
+			File file = new File(filePath);
+			JAXBContext jaxbContext = JAXBContext.newInstance(HeartBeatClientXMLVO.class);
+			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+			// output pretty printed
+			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+			jaxbMarshaller.marshal(heartBeatClientXMLVO, file);
+			jaxbMarshaller.marshal(heartBeatClientXMLVO, System.out);
+			isSucess = true;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return isSucess;
+
 	}
 
 	public void beat() {

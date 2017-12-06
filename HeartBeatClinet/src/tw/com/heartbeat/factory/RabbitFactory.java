@@ -1,8 +1,15 @@
 package tw.com.heartbeat.factory;
 
+import java.io.File;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
 import com.rabbitmq.jms.admin.RMQConnectionFactory;
 import com.rabbitmq.jms.admin.RMQDestination;
 
+import tw.com.heartbeat.clinet.vo.HeartBeatClientXMLVO;
 import tw.com.jms.util.XMLParser;
 
 public class RabbitFactory {
@@ -10,6 +17,24 @@ public class RabbitFactory {
 
 	public RabbitFactory(String filePath) {
 		this.filePath = filePath;
+	}
+	public HeartBeatClientXMLVO  getHeartBeatClientXMLVO() {
+		File file = new File(filePath);
+		JAXBContext jaxbContext;
+		try {
+			jaxbContext = JAXBContext.newInstance(HeartBeatClientXMLVO.class);
+
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+			HeartBeatClientXMLVO heartBeatClientXMLVO = (HeartBeatClientXMLVO) jaxbUnmarshaller.unmarshal(file);
+			
+			return heartBeatClientXMLVO;
+
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	public RMQDestination CreateRabbitDestination() {
