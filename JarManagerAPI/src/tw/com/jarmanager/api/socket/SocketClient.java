@@ -20,6 +20,12 @@ import tw.com.jarmanager.api.vo.JarManagerAPIXMLVO;
 import tw.com.jarmanager.api.vo.JarProjectVO;
 import tw.com.jarmanager.api.vo.RequestVO;
 
+
+/*************************
+ * 
+ * 用來與SocketServer溝通的class
+ * 
+ * ***********************/
 public class SocketClient {
 	private static final Logger logger = LogManager.getLogger(SocketClient.class);
 
@@ -79,6 +85,12 @@ public class SocketClient {
 		}
 	}
 
+	
+	/***********************************
+	 * 用來獲得存放在SocketServer上的JarProjectVOList
+	 * 
+	 * 也就是執行的jar的狀態
+	 * *********************************/
 	public List<JarProjectVO> getJarProjectVOList() throws IOException {
 		Socket socket = null;
 		List<JarProjectVO> jarProjectVOList = null;
@@ -136,7 +148,11 @@ public class SocketClient {
 		return jarProjectVOList;
 	}
 	
-	
+	/**************************************
+	 * 用來發送更改的id和再更改時的JarManagerAPIXMLVO
+	 * 
+	 * 用於新增 刪除 修改 JarManagerAPIXMLVO所呼叫
+	 * ************************************/
 	public boolean sendChangeBeatID(List<String> ids,JarManagerAPIXMLVO jarManagerAPIXMLVO) throws IOException {
 		Socket socket = null;
 		boolean isSucess = false;
@@ -190,6 +206,13 @@ public class SocketClient {
 		return isSucess;
 	}
 	
+	/**************************************
+	 * 用來發送更改的id和再更改時的JarManagerAPIXMLVO
+	 * 
+	 * 利用多載來實現不同接口但相同功能
+	 * 
+	 * 用於新增 刪除 修改 JarManagerAPIXMLVO所呼叫
+	 * ************************************/
 	public boolean sendChangeBeatID(JarProjectVO jarProjectVO,JarManagerAPIXMLVO jarManagerAPIXMLVO) throws IOException {
 		Socket socket = null;
 		boolean isSucess = false;
@@ -246,14 +269,6 @@ public class SocketClient {
 		}
 		return isSucess;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	
 }

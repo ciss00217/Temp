@@ -22,6 +22,20 @@ import tw.com.jarmanager.api.vo.JarManagerAPIXMLVO;
 import tw.com.jarmanager.api.vo.JarProjectVO;
 import tw.com.jarmanager.api.vo.RequestVO;
 
+
+/**************************************************
+ * 用來與SocketClient溝通的class
+ * 
+ * 在此專案用來存放各個jarvo的專案的狀態
+ * 
+ * 以及新增修改刪除的id
+ * 
+ * 1.port				:	SocketServer的port
+ * 2.changeIdSet		:	新增修改刪除的ids
+ * 3.jarProjectVOList	:	用來存放執行的jar狀態
+ * 4.isApiXMLChange		:	JarManagerAPIXML是否有修改
+
+ * ************************************************/
 public class SocketServer extends Thread {
 	private static final Logger logger = LogManager.getLogger(SocketServer.class);
 

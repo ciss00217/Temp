@@ -74,6 +74,15 @@ public class JarManagerAPIService {
 		JarManagerAPIService.xmlFile = xmlFile;
 	}
 
+	
+	/*********************
+	 * 用來檢查資料
+	 * 
+	 * beatID,fileName,jarFilePath,timeSeries 是否有空值
+	 * 
+	 * 且BeatID一樣但是JarFilePath不同 回傳false
+	 * 
+	 * *********************/
 	public static boolean chackData(JarProjectVO jarProjectVO) {
 
 		String beatID = jarProjectVO.getBeatID();
@@ -305,6 +314,10 @@ public class JarManagerAPIService {
 		return true;
 	}
 
+	/*****************
+	 * 用來更新jarmanagerAPIXML的jar
+	 * 
+	 * ********************/
 	public static boolean updateJarProjectVOXml(JarProjectVO jarProjectVO) {
 
 		boolean isSucess = chackData(jarProjectVO);
@@ -363,6 +376,12 @@ public class JarManagerAPIService {
 		return true;
 	}
 
+	
+	
+	/*****************
+	 * 用來移除jarmanagerAPIXML的jar
+	 * 
+	 * ********************/
 	public static boolean deleteJarProjectVOXml(List<String> jarIDList) {
 
 		try {
@@ -500,9 +519,8 @@ public class JarManagerAPIService {
 	}
 
 	/******************************
-	 * 改版使用socketServer 來控制 新 刪 修
 	 * 
-	 * 1.啟動 JarManagerAPIServiceMethod.startJars 1.取得XML
+	 * 1.啟動 JarManagerAPIServiceMethod.startJars 取得XML
 	 * 
 	 * 2.轉成物件
 	 * 
@@ -512,24 +530,19 @@ public class JarManagerAPIService {
 	 * 
 	 * 5.放入map
 	 * 
-	 * 1.檢查socketServer來判別是否有新刪修
+	 * 7.檢查socketServer來判別是否有新刪修
 	 * 
-	 * 2.檢查 JarManagerAPIServiceMethod.checkData 
+	 * 8. 有的話 就更換 XML 沒有的話取全域變數檢查
 	 * 
-	 * 2.有的話 就讀取 XML 沒有的話取全域變數
+	 * 9. JarManagerAPIServiceMethod.checkData 取得須重啟的 reStartList
 	 * 
-	 * 3.取得須重啟的
+	 * 10.重啟 JarManagerAPIServiceMethod.reStart 重啟須重啟的
 	 * 
-	 * 3.重啟 JarManagerAPIServiceMethod.reStart
+	 * 11.放入狀態 到 socketServer
 	 * 
-	 * 1.重啟須重啟的
+	 * 12.等待
 	 * 
-	 * 
-	 * 4.放入狀態 到 socketServer
-	 * 
-	 * 5.等待
-	 * 
-	 * 6.當ui修改時 回傳狀態 要改成 待重啟中
+	 * 13.當ui修改時 回傳狀態 要改成 待重啟中
 	 * 
 	 * @throws IOException
 	 *********************************/
